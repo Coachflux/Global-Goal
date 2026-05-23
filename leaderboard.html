@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaderboard | Global Goal 2026</title>
+    <meta name="description" content="See who's topping the Global Goal 2026 leaderboard. Compete with fans worldwide for epic prizes.">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .page-header { padding-top: 8rem; padding-bottom: 2rem; text-align: center; }
+        .leaderboard-full { max-width: 900px; margin: 0 auto; }
+        .leaderboard-tabs { display: flex; justify-content: center; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap; }
+        .lb-tab { padding: 0.6rem 1.5rem; border-radius: 50px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.02); color: rgba(255,255,255,0.6); cursor: pointer; transition: all 0.3s; font-weight: 600; font-size: 0.85rem; }
+        .lb-tab.active { background: var(--gradient-primary); color: white; border-color: transparent; }
+        .lb-tab:hover:not(.active) { border-color: rgba(255,255,255,0.3); color: white; }
+        .top-three { display: flex; justify-content: center; align-items: flex-end; gap: 2rem; margin-bottom: 3rem; flex-wrap: wrap; }
+        .podium-card { text-align: center; padding: 2rem; border-radius: 20px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); transition: all 0.3s; }
+        .podium-card:hover { transform: translateY(-5px); }
+        .podium-card.first { border-color: rgba(251, 191, 36, 0.3); background: rgba(251, 191, 36, 0.05); order: 2; }
+        .podium-card.second { border-color: rgba(192, 192, 192, 0.3); background: rgba(192, 192, 192, 0.05); order: 1; }
+        .podium-card.third { border-color: rgba(205, 127, 50, 0.3); background: rgba(205, 127, 50, 0.05); order: 3; }
+        .podium-avatar { width: 80px; height: 80px; border-radius: 50%; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 800; }
+        .podium-card.first .podium-avatar { background: var(--gradient-gold); color: #1a1a2e; }
+        .podium-card.second .podium-avatar { background: linear-gradient(135deg, #c0c0c0, #a0a0a0); color: #1a1a2e; }
+        .podium-card.third .podium-avatar { background: linear-gradient(135deg, #cd7f32, #b87333); color: white; }
+        .podium-name { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.3rem; }
+        .podium-points { font-family: 'Montserrat', sans-serif; font-size: 1.5rem; font-weight: 800; color: var(--gg-gold); }
+        .podium-prize { font-size: 0.8rem; color: rgba(255,255,255,0.5); margin-top: 0.5rem; }
+        .leaderboard-list { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; overflow: hidden; }
+        .lb-row { display: grid; grid-template-columns: 60px 1fr 100px 120px; padding: 1rem 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.03); align-items: center; transition: all 0.3s; }
+        .lb-row:hover { background: rgba(255,255,255,0.02); }
+        .lb-row:last-child { border-bottom: none; }
+        .lb-row.top-rank { background: rgba(255,255,255,0.01); }
+        .lb-rank { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 1.1rem; }
+        .lb-rank.gold { color: var(--gg-gold); }
+        .lb-rank.silver { color: #c0c0c0; }
+        .lb-rank.bronze { color: #cd7f32; }
+        .lb-user { display: flex; align-items: center; gap: 0.8rem; }
+        .lb-avatar { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; }
+        .lb-name { font-weight: 600; font-size: 0.9rem; }
+        .lb-points { font-family: 'Montserrat', sans-serif; font-weight: 700; color: var(--gg-gold); }
+        .lb-badge { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 50px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; }
+        .lb-badge.vip { background: rgba(139, 92, 246, 0.15); color: var(--gg-purple); border: 1px solid rgba(139, 92, 246, 0.3); }
+        .lb-badge.active { background: rgba(16, 185, 129, 0.15); color: var(--gg-green); border: 1px solid rgba(16, 185, 129, 0.3); }
+        .lb-badge.new { background: rgba(37, 99, 235, 0.15); color: var(--gg-blue); border: 1px solid rgba(37, 99, 235, 0.3); }
+        .lb-badge.rising { background: rgba(245, 158, 11, 0.15); color: var(--gg-gold); border: 1px solid rgba(245, 158, 11, 0.3); }
+        .lb-badge.fan { background: rgba(255, 255, 255, 0.05); color: rgba(255,255,255,0.5); border: 1px solid rgba(255,255,255,0.1); }
+        .your-rank { background: rgba(37, 99, 235, 0.1); border: 1px solid rgba(37, 99, 235, 0.2); }
+        .pagination { display: flex; justify-content: center; gap: 0.5rem; margin-top: 2rem; flex-wrap: wrap; }
+        .page-btn { padding: 0.5rem 1rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.02); color: white; cursor: pointer; transition: all 0.3s; font-weight: 600; }
+        .page-btn:hover { background: rgba(37, 99, 235, 0.2); border-color: var(--gg-blue); }
+        .page-btn.active { background: var(--gradient-primary); border-color: transparent; }
+        .page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+        .leaderboard-info { text-align: center; margin-bottom: 2rem; opacity: 0.5; font-size: 0.85rem; }
+    </style>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
+</head>
+<body>
+
+    <nav id="navbar">
+        <div class="nav-container">
+            <a href="../index.html" class="logo"><div class="logo-icon">GG</div><span class="logo-text">GLOBAL GOAL</span></a>
+            <ul class="nav-links">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="earn-points.html">Earn Points</a></li>
+                <li><a href="leaderboard.html">Leaderboard</a></li>
+                <li><a href="prizes.html">Prizes</a></li>
+                <li><a href="highlights.html">Highlights</a></li>
+                <li><a href="referral.html">Refer & Earn</a></li>
+                <li id="auth-nav-item"><div class="user-points" onclick="location.href='profile.html'"><span class="points-icon">⚡</span><span id="nav-points">1,250</span> pts</div></li>
+            </ul>
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+        </div>
+    </nav>
+
+    <div class="page-header">
+        <span class="section-tag">Competition</span>
+        <h1 class="section-title">Global Leaderboard</h1>
+        <p class="section-desc">The race is on! Top 1000 fans earn exclusive prizes and VIP status. Updated in real-time.</p>
+    </div>
+
+    <section style="padding-top: 0;">
+        <div class="leaderboard-tabs">
+            <button class="lb-tab active" onclick="switchTab('weekly')">This Week</button>
+            <button class="lb-tab" onclick="switchTab('monthly')">This Month</button>
+            <button class="lb-tab" onclick="switchTab('alltime')">All Time</button>
+        </div>
+
+        <div class="leaderboard-info">Showing rankings 1-1000 based on total points earned</div>
+
+        <!-- Top 3 Podium -->
+        <div class="top-three">
+            <div class="podium-card second">
+                <div class="podium-avatar">MK</div>
+                <div class="podium-name">Maria_Kicks</div>
+                <div class="podium-points">11,280 pts</div>
+                <div class="podium-prize">🥈 $50 Gift Card</div>
+            </div>
+            <div class="podium-card first">
+                <div class="podium-avatar">JD</div>
+                <div class="podium-name">James_Dawson</div>
+                <div class="podium-points">12,450 pts</div>
+                <div class="podium-prize">🥇 PlayStation 5</div>
+            </div>
+            <div class="podium-card third">
+                <div class="podium-avatar">AL</div>
+                <div class="podium-name">Alex_Lion</div>
+                <div class="podium-points">10,950 pts</div>
+                <div class="podium-prize">🥉 Nike Boots</div>
+            </div>
+        </div>
+
+        <!-- Full List -->
+        <div class="leaderboard-full">
+            <div class="leaderboard-list" id="leaderboard-list">
+                <!-- Dynamically populated -->
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination" id="pagination">
+                <!-- Dynamically populated -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Ad -->
+    <div class="ad-container" style="max-width: 900px;">
+        <span class="ad-label">Advertisement</span>
+        <div class="ad-placeholder leaderboard">
+            <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="XXXXXXXXXX" data-ad-format="horizontal" data-full-width-responsive="true"></ins>
+            <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        </div>
+    </div>
+
+    <!-- How to Climb -->
+    <section>
+        <div class="section-header fade-in">
+            <span class="section-tag">Tips</span>
+            <h2 class="section-title">How to Climb the Ranks</h2>
+        </div>
+        <div class="tasks-grid fade-in" style="max-width: 1000px; margin: 0 auto;">
+            <div class="task-card">
+                <div class="task-icon">📺</div>
+                <div class="task-content">
+                    <div class="task-title">Watch Daily Highlights</div>
+                    <div class="task-desc">New videos every match day. 50 points each adds up fast!</div>
+                    <div class="task-reward">⚡ +50 per video</div>
+                </div>
+            </div>
+            <div class="task-card">
+                <div class="task-icon">👥</div>
+                <div class="task-content">
+                    <div class="task-title">Referral Army</div>
+                    <div class="task-desc">Each friend = 50 points. Refer up to 100 friends = 5,000 points max.</div>
+                    <div class="task-reward">⚡ +50 per referral (Max 100)</div>
+                </div>
+            </div>
+            <div class="task-card">
+                <div class="task-icon">📅</div>
+                <div class="task-content">
+                    <div class="task-title">Daily Streak</div>
+                    <div class="task-desc">Don't break the chain. Daily check-ins compound your score.</div>
+                    <div class="task-reward">⚡ +20 daily + streak bonus</div>
+                </div>
+            </div>
+        </div>
+        <div style="text-align: center; margin-top: 2rem;">
+            <a href="earn-points.html" class="btn btn-primary">Start Earning Now →</a>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-brand"><span class="logo-text">GLOBAL GOAL 2026</span><p>Independent fan community. Not affiliated with FIFA.</p></div>
+            <div class="footer-links"><h4>Platform</h4><ul><li><a href="earn-points.html">Earn Points</a></li><li><a href="leaderboard.html">Leaderboard</a></li><li><a href="prizes.html">Prizes</a></li></ul></div>
+            <div class="footer-links"><h4>Legal</h4><ul><li><a href="terms.html">Terms</a></li><li><a href="privacy.html">Privacy</a></li><li><a href="contest-rules.html">Contest Rules</a></li></ul></div>
+        </div>
+        <div class="footer-bottom"><p>© 2026 Global Goal. All rights reserved. Not affiliated with FIFA.</p></div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+    <script>
+        let currentPage = 1;
+        const entriesPerPage = 50;
+        const totalEntries = 1000;
+
+        function renderLeaderboardPage(page) {
+            const container = document.getElementById('leaderboard-list');
+            const offset = (page - 1) * entriesPerPage;
+            const data = getLeaderboardData();
+            const slice = data.slice(offset, offset + entriesPerPage);
+
+            // Find user's position
+            let userRank = 1000;
+            for (let i = 0; i < data.length; i++) {
+                if (userPoints >= data[i].points) {
+                    userRank = i + 1;
+                    break;
+                }
+            }
+
+            let html = slice.map(entry => `
+                <div class="lb-row ${entry.rank <= 3 ? 'top-rank' : ''}">
+                    <div class="lb-rank ${entry.rank === 1 ? 'gold' : entry.rank === 2 ? 'silver' : entry.rank === 3 ? 'bronze' : ''}">#${entry.rank}</div>
+                    <div class="lb-user">
+                        <div class="lb-avatar" style="background: ${entry.avatarColor};">${entry.initials}</div>
+                        <span class="lb-name">${entry.name}</span>
+                    </div>
+                    <div class="lb-points">${entry.points.toLocaleString()}</div>
+                    <div><span class="lb-badge ${entry.badge.toLowerCase()}">${entry.badge}</span></div>
+                </div>
+            `).join('');
+
+            // Add "You" row if on the right page
+            const userPage = Math.ceil(userRank / entriesPerPage);
+            if (page === userPage && !isLoggedIn) {
+                html += `
+                    <div class="lb-row your-rank">
+                        <div class="lb-rank" style="color: var(--gg-blue);">#${userRank}</div>
+                        <div class="lb-user">
+                            <div class="lb-avatar" style="background: var(--gradient-primary);">YO</div>
+                            <span class="lb-name">You (Your Rank)</span>
+                        </div>
+                        <div class="lb-points" id="your-points">${userPoints.toLocaleString()}</div>
+                        <div><span class="lb-badge" style="background: rgba(37, 99, 235, 0.15); color: var(--gg-blue); border: 1px solid rgba(37, 99, 235, 0.3);">Keep Going!</span></div>
+                    </div>
+                `;
+            }
+
+            container.innerHTML = html;
+            renderPagination(page);
+        }
+
+        function renderPagination(currentPage) {
+            const totalPages = Math.ceil(totalEntries / entriesPerPage);
+            const container = document.getElementById('pagination');
+
+            let html = '';
+
+            // Previous button
+            html += `<button class="page-btn" onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>← Prev</button>`;
+
+            // Page numbers
+            const startPage = Math.max(1, currentPage - 2);
+            const endPage = Math.min(totalPages, startPage + 4);
+
+            for (let i = startPage; i <= endPage; i++) {
+                html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="changePage(${i})">${i}</button>`;
+            }
+
+            // Next button
+            html += `<button class="page-btn" onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>Next →</button>`;
+
+            container.innerHTML = html;
+        }
+
+        function changePage(page) {
+            const totalPages = Math.ceil(totalEntries / entriesPerPage);
+            if (page < 1 || page > totalPages) return;
+            currentPage = page;
+            renderLeaderboardPage(page);
+            window.scrollTo({ top: document.getElementById('leaderboard-list').offsetTop - 100, behavior: 'smooth' });
+        }
+
+        function switchTab(period) {
+            document.querySelectorAll('.lb-tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            showNotification('Leaderboard Updated', `Showing ${period} rankings`, 'success');
+            // In a real app, this would fetch different data
+        }
+
+        // Update auth nav
+        function updateAuthNav() {
+            const authNav = document.getElementById('auth-nav-item');
+            if (isLoggedIn && currentUser) {
+                authNav.innerHTML = `<div class="user-points" onclick="location.href='profile.html'"><span class="points-icon">👤</span><span>${currentUser.displayName || 'Profile'}</span></div>`;
+            } else {
+                authNav.innerHTML = `<a href="login.html" class="auth-btn"><div class="user-points">Sign In</div></a>`;
+            }
+        }
+
+        // Initialize
+        setTimeout(() => {
+            updateAuthNav();
+            renderLeaderboardPage(1);
+        }, 600);
+    </script>
+</body>
+</html>

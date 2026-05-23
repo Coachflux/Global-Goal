@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQ | Global Goal 2026</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .legal-page { max-width: 900px; margin: 0 auto; padding-top: 8rem; padding-bottom: 4rem; }
+        .legal-page h1 { font-size: 2.5rem; margin-bottom: 1rem; }
+        .faq-item { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 1.5rem; margin-bottom: 1rem; }
+        .faq-item h3 { font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--gg-blue); }
+        .faq-item p { color: rgba(255,255,255,0.7); line-height: 1.6; }
+    </style>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+</head>
+<body>
+    <nav id="navbar">
+        <div class="nav-container">
+            <a href="../index.html" class="logo"><div class="logo-icon">GG</div><span class="logo-text">GLOBAL GOAL</span></a>
+            <ul class="nav-links">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="earn-points.html">Earn Points</a></li>
+                <li><a href="leaderboard.html">Leaderboard</a></li>
+                <li><a href="prizes.html">Prizes</a></li>
+                <li><a href="highlights.html">Highlights</a></li>
+                <li><a href="referral.html">Refer & Earn</a></li>
+                <li id="auth-nav-item"><div class="user-points" onclick="location.href='profile.html'"><span class="points-icon">⚡</span><span id="nav-points">1,250</span> pts</div></li>
+            </ul>
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+        </div>
+    </nav>
+    <div class="legal-page">
+        <h1>Frequently Asked Questions</h1>
+        <div class="faq-item">
+            <h3>How do I earn points?</h3>
+            <p>Complete tasks like watching highlight videos, referring friends (max 100), daily check-ins, subscribing to our YouTube channel, and engaging with community content.</p>
+        </div>
+        <div class="faq-item">
+            <h3>How many friends can I refer?</h3>
+            <p>Each user can refer a maximum of 100 friends. You earn 50 points for each successful referral.</p>
+        </div>
+        <div class="faq-item">
+            <h3>Do points expire?</h3>
+            <p>No, your points never expire. You can save them for big prizes or redeem smaller rewards anytime.</p>
+        </div>
+        <div class="faq-item">
+            <h3>How does the leaderboard work?</h3>
+            <p>The leaderboard ranks the top 1000 users by total points earned. It updates in real-time as users complete tasks.</p>
+        </div>
+        <div class="faq-item">
+            <h3>How do I redeem prizes?</h3>
+            <p>Visit the Prizes page, select a prize you have enough points for, and click "Redeem". You'll receive a confirmation email with delivery details.</p>
+        </div>
+        <div class="faq-item">
+            <h3>Is this affiliated with FIFA?</h3>
+            <p>No. Global Goal 2026 is an independent fan community platform and is NOT affiliated with, endorsed by, or sponsored by FIFA.</p>
+        </div>
+    </div>
+    <footer>
+        <div class="footer-content">
+            <div class="footer-brand"><span class="logo-text">GLOBAL GOAL 2026</span><p>Independent fan community. Not affiliated with FIFA.</p></div>
+            <div class="footer-links"><h4>Platform</h4><ul><li><a href="earn-points.html">Earn Points</a></li><li><a href="leaderboard.html">Leaderboard</a></li><li><a href="prizes.html">Prizes</a></li></ul></div>
+            <div class="footer-links"><h4>Legal</h4><ul><li><a href="terms.html">Terms</a></li><li><a href="privacy.html">Privacy</a></li><li><a href="contest-rules.html">Contest Rules</a></li></ul></div>
+        </div>
+        <div class="footer-bottom"><p>© 2026 Global Goal. All rights reserved. Not affiliated with FIFA.</p></div>
+    </footer>
+    <script src="../js/main.js"></script>
+    <script>
+        function updateAuthNav() {
+            const authNav = document.getElementById('auth-nav-item');
+            if (isLoggedIn && currentUser) {
+                authNav.innerHTML = `<div class="user-points" onclick="location.href='profile.html'"><span class="points-icon">👤</span><span>${currentUser.displayName || 'Profile'}</span></div>`;
+            } else {
+                authNav.innerHTML = `<a href="login.html" class="auth-btn"><div class="user-points">Sign In</div></a>`;
+            }
+        }
+        setTimeout(updateAuthNav, 600);
+    </script>
+</body>
+</html>

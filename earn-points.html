@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Earn Points | Global Goal 2026</title>
+    <meta name="description" content="Complete tasks to earn points. Watch videos, refer friends, subscribe to YouTube, and more.">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .page-header { padding-top: 8rem; padding-bottom: 2rem; text-align: center; }
+        .task-section { max-width: 1000px; margin: 0 auto; }
+        .task-detail {
+            background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 20px; padding: 2rem; margin-bottom: 2rem; transition: all 0.3s ease;
+        }
+        .task-detail:hover { border-color: rgba(37, 99, 235, 0.2); }
+        .task-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; }
+        .task-title-lg { font-size: 1.3rem; font-weight: 700; display: flex; align-items: center; gap: 0.8rem; }
+        .task-status { padding: 0.4rem 1rem; border-radius: 50px; font-size: 0.8rem; font-weight: 700; }
+        .task-status.available { background: rgba(16, 185, 129, 0.1); color: var(--gg-green); border: 1px solid rgba(16, 185, 129, 0.3); }
+        .task-status.completed { background: rgba(255, 255, 255, 0.05); color: rgba(255, 255, 255, 0.4); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .task-status.limited { background: rgba(251, 191, 36, 0.1); color: var(--gg-gold); border: 1px solid rgba(251, 191, 36, 0.3); }
+        .task-body { color: rgba(255, 255, 255, 0.6); line-height: 1.8; margin-bottom: 1.5rem; }
+        .task-action { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
+        .task-input { padding: 0.8rem 1.2rem; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.03); color: white; min-width: 250px; }
+        .task-input::placeholder { color: rgba(255, 255, 255, 0.3); }
+        .progress-bar { width: 100%; height: 8px; background: rgba(255, 255, 255, 0.05); border-radius: 4px; margin-top: 1rem; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--gradient-primary); border-radius: 4px; transition: width 0.5s ease; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; }
+        .stat-box { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 1.5rem; text-align: center; }
+        .stat-box-value { font-family: 'Montserrat', sans-serif; font-size: 2rem; font-weight: 800; color: var(--gg-gold); }
+        .stat-box-label { font-size: 0.8rem; color: rgba(255, 255, 255, 0.5); margin-top: 0.3rem; }
+        .referral-limit { font-size: 0.8rem; color: var(--gg-gold); margin-top: 0.5rem; }
+        .referral-limit.warning { color: #ef4444; }
+    </style>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
+</head>
+<body>
+
+    <nav id="navbar">
+        <div class="nav-container">
+            <a href="../index.html" class="logo">
+                <div class="logo-icon">GG</div>
+                <span class="logo-text">GLOBAL GOAL</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="earn-points.html">Earn Points</a></li>
+                <li><a href="leaderboard.html">Leaderboard</a></li>
+                <li><a href="prizes.html">Prizes</a></li>
+                <li><a href="highlights.html">Highlights</a></li>
+                <li><a href="referral.html">Refer & Earn</a></li>
+                <li id="auth-nav-item"><div class="user-points" onclick="location.href='profile.html'"><span class="points-icon">⚡</span><span id="nav-points">1,250</span> pts</div></li>
+            </ul>
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+        </div>
+    </nav>
+
+    <div class="page-header">
+        <span class="section-tag">Task Center</span>
+        <h1 class="section-title">Earn Points</h1>
+        <p class="section-desc">Complete tasks below to accumulate points. All tasks are verified to ensure fair play.</p>
+    </div>
+
+    <!-- User Stats -->
+    <section style="padding-top: 0;">
+        <div class="stats-grid" style="max-width: 1000px; margin: 0 auto 3rem;">
+            <div class="stat-box">
+                <div class="stat-box-value" id="stat-points">1,250</div>
+                <div class="stat-box-label">Current Points</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-box-value" id="stat-tasks">5</div>
+                <div class="stat-box-label">Tasks Completed</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-box-value" id="stat-referrals">2</div>
+                <div class="stat-box-label">Friends Referred</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-box-value" id="stat-videos">3</div>
+                <div class="stat-box-label">Videos Watched</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Ad -->
+    <div class="ad-container" style="max-width: 1000px;">
+        <span class="ad-label">Advertisement</span>
+        <div class="ad-placeholder leaderboard">
+            <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="XXXXXXXXXX" data-ad-format="horizontal" data-full-width-responsive="true"></ins>
+            <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        </div>
+    </div>
+
+    <!-- Tasks -->
+    <section class="task-section">
+
+        <!-- Daily Check-in -->
+        <div class="task-detail" id="task-daily">
+            <div class="task-header">
+                <div class="task-title-lg">📅 Daily Check-in</div>
+                <span class="task-status available" id="status-daily">Available</span>
+            </div>
+            <div class="task-body">
+                Visit Global Goal every day and claim your check-in bonus. Simply click the button below to earn 20 points instantly. 
+                This resets every 24 hours at midnight UTC. Streak bonuses coming soon!
+            </div>
+            <div class="task-action">
+                <button class="btn btn-primary" onclick="claimDaily()" id="btn-daily">Claim 20 Points</button>
+                <span style="color: rgba(255,255,255,0.4); font-size: 0.85rem;">Resets in: <span id="daily-timer">--:--:--</span></span>
+            </div>
+        </div>
+
+        <!-- Active Time -->
+        <div class="task-detail">
+            <div class="task-header">
+                <div class="task-title-lg">⏱️ Active Time Bonus</div>
+                <span class="task-status available">Auto-Tracking</span>
+            </div>
+            <div class="task-body">
+                Stay active on our platform for 20 minutes or more per session. Read articles, watch highlights, browse match info. 
+                Our system automatically tracks your active time and credits 30 points when you hit the 20-minute mark.
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="session-progress" style="width: 0%"></div>
+            </div>
+            <p style="font-size: 0.8rem; color: rgba(255,255,255,0.4); margin-top: 0.5rem;">Session progress: <span id="session-time">0</span> / 20 minutes</p>
+        </div>
+
+        <!-- Watch Videos -->
+        <div class="task-detail">
+            <div class="task-header">
+                <div class="task-title-lg">📺 Watch Highlight Videos</div>
+                <span class="task-status available">Available</span>
+            </div>
+            <div class="task-body">
+                Watch match highlight videos embedded from our YouTube channel. You must watch at least 80% of the video to earn points.
+                Each video earns you 50 points. New videos added after every match day!
+            </div>
+            <div class="task-action">
+                <a href="highlights.html" class="btn btn-primary">Go to Highlights →</a>
+                <span style="color: var(--gg-gold); font-weight: 700;">⚡ +50 per video</span>
+            </div>
+        </div>
+
+        <!-- YouTube Subscribe -->
+        <div class="task-detail" id="task-youtube">
+            <div class="task-header">
+                <div class="task-title-lg">▶️ Subscribe on YouTube</div>
+                <span class="task-status available" id="status-youtube">Available</span>
+            </div>
+            <div class="task-body">
+                Subscribe to our official YouTube channel where we post daily highlights, analysis, and exclusive content. 
+                After subscribing, enter your YouTube username below for verification. Bonus: 100 points!
+            </div>
+            <div class="task-action">
+                <input type="text" class="task-input" id="youtube-username" placeholder="Your YouTube username">
+                <button class="btn btn-primary" onclick="verifyYouTube(document.getElementById('youtube-username').value)">Verify & Claim</button>
+                <span style="color: var(--gg-gold); font-weight: 700;">⚡ +100 Points</span>
+            </div>
+            <p style="font-size: 0.75rem; color: rgba(255,255,255,0.3); margin-top: 0.5rem;">*Verification may take up to 24 hours. One-time bonus only.</p>
+        </div>
+
+        <!-- Refer Friends -->
+        <div class="task-detail">
+            <div class="task-header">
+                <div class="task-title-lg">👥 Refer Friends</div>
+                <span class="task-status available" id="status-referral">Unlimited</span>
+            </div>
+            <div class="task-body">
+                Share your unique referral link with friends. When they sign up and complete their first task, you both earn 50 points!
+                There's a maximum limit of 100 friends you can refer. Top referrers get featured on our leaderboard.
+            </div>
+            <div class="task-action">
+                <input type="text" class="task-input" id="ref-link" readonly value="https://globalgoal2026.com/?ref=GG8X2K9M" style="flex: 1;">
+                <button class="btn btn-primary" onclick="copyReferralLink()">Copy Link</button>
+                <a href="referral.html" class="btn btn-outline">Referral Dashboard</a>
+            </div>
+            <div class="referral-limit" id="referral-limit">You have referred 2 of 100 friends</div>
+        </div>
+
+        <!-- Comment & Discuss -->
+        <div class="task-detail">
+            <div class="task-header">
+                <div class="task-title-lg">📝 Comment & Discuss</div>
+                <span class="task-status available">Available</span>
+            </div>
+            <div class="task-body">
+                Join the conversation! Leave thoughtful comments on our match discussions, articles, and community posts. 
+                Comments must be at least 20 words and add value to the discussion. Spam or low-quality comments will be rejected.
+            </div>
+            <div class="task-action">
+                <a href="community.html" class="btn btn-primary">Join Discussion →</a>
+                <span style="color: var(--gg-gold); font-weight: 700;">⚡ +40 per comment</span>
+            </div>
+        </div>
+
+        <!-- Newsletter -->
+        <div class="task-detail">
+            <div class="task-header">
+                <div class="task-title-lg">📧 Newsletter Subscribe</div>
+                <span class="task-status available" id="status-newsletter">Available</span>
+            </div>
+            <div class="task-body">
+                Subscribe to our weekly newsletter for match updates, exclusive point opportunities, and prize announcements. 
+                Unsubscribe anytime. We never spam.
+            </div>
+            <div class="task-action">
+                <input type="email" class="task-input" id="newsletter-email" placeholder="your@email.com">
+                <button class="btn btn-primary" onclick="handleSubscribeManual()">Subscribe & Claim</button>
+                <span style="color: var(--gg-gold); font-weight: 700;">⚡ +50 Points</span>
+            </div>
+        </div>
+
+        <!-- Social Follow -->
+        <div class="task-detail">
+            <div class="task-header">
+                <div class="task-title-lg">🐦 Follow on Social Media</div>
+                <span class="task-status available">Available</span>
+            </div>
+            <div class="task-body">
+                Follow us on Twitter/X, Instagram, and Facebook. DM us a screenshot of your follow for verification. 
+                Each platform earns you 25 points. That's 75 points total for following all three!
+            </div>
+            <div class="task-action" style="gap: 0.5rem;">
+                <a href="#" target="_blank" class="btn btn-outline" style="padding: 0.6rem 1rem; font-size: 0.8rem;">𝕏 Twitter (+25)</a>
+                <a href="#" target="_blank" class="btn btn-outline" style="padding: 0.6rem 1rem; font-size: 0.8rem;">📷 Instagram (+25)</a>
+                <a href="#" target="_blank" class="btn btn-outline" style="padding: 0.6rem 1rem; font-size: 0.8rem;">f Facebook (+25)</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Ad -->
+    <div class="ad-container" style="max-width: 1000px;">
+        <span class="ad-label">Advertisement</span>
+        <div class="ad-placeholder medium-rect">
+            <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="XXXXXXXXXX" data-ad-format="rectangle"></ins>
+            <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-brand">
+                <span class="logo-text">GLOBAL GOAL 2026</span>
+                <p>Independent fan community. Not affiliated with FIFA.</p>
+            </div>
+            <div class="footer-links">
+                <h4>Platform</h4>
+                <ul>
+                    <li><a href="earn-points.html">Earn Points</a></li>
+                    <li><a href="leaderboard.html">Leaderboard</a></li>
+                    <li><a href="prizes.html">Prizes</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Legal</h4>
+                <ul>
+                    <li><a href="terms.html">Terms</a></li>
+                    <li><a href="privacy.html">Privacy</a></li>
+                    <li><a href="contest-rules.html">Contest Rules</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2026 Global Goal. All rights reserved. Not affiliated with FIFA.</p>
+        </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+    <script>
+        // Page-specific functions
+        function handleSubscribeManual() {
+            const email = document.getElementById('newsletter-email').value;
+            if (!email || !email.includes('@')) {
+                showNotification('Invalid Email', 'Please enter a valid email.', 'error');
+                return;
+            }
+            const subscribed = localStorage.getItem('gg_newsletter');
+            if (subscribed) {
+                showNotification('Already Done', 'You already claimed this bonus.', 'error');
+                return;
+            }
+            localStorage.setItem('gg_newsletter', email);
+            addPoints(50, 'Newsletter subscription');
+            document.getElementById('status-newsletter').textContent = 'Completed';
+            document.getElementById('status-newsletter').className = 'task-status completed';
+        }
+
+        // Update daily timer
+        function updateDailyTimer() {
+            const last = localStorage.getItem('gg_last_checkin');
+            const now = new Date();
+            const timerEl = document.getElementById('daily-timer');
+            const btnEl = document.getElementById('btn-daily');
+            const statusEl = document.getElementById('status-daily');
+
+            if (last === now.toDateString()) {
+                // Already claimed today
+                const tomorrow = new Date(now);
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                tomorrow.setHours(0, 0, 0, 0);
+                const diff = tomorrow - now;
+
+                const hours = Math.floor(diff / 3600000);
+                const minutes = Math.floor((diff % 3600000) / 60000);
+                const seconds = Math.floor((diff % 60000) / 1000);
+
+                if (timerEl) timerEl.textContent = `${String(hours).padStart(2,'0')}:${String(minutes).padStart(2,'0')}:${String(seconds).padStart(2,'0')}`;
+                if (btnEl) { btnEl.disabled = true; btnEl.style.opacity = '0.5'; btnEl.textContent = 'Claimed Today'; }
+                if (statusEl) { statusEl.textContent = 'Completed'; statusEl.className = 'task-status completed'; }
+            } else {
+                if (timerEl) timerEl.textContent = 'Ready!';
+                if (btnEl) { btnEl.disabled = false; btnEl.style.opacity = '1'; btnEl.textContent = 'Claim 20 Points'; }
+            }
+        }
+
+        setInterval(updateDailyTimer, 1000);
+        updateDailyTimer();
+
+        // Session progress
+        let pageSessionStart = Date.now();
+        setInterval(() => {
+            const elapsed = Math.floor((Date.now() - pageSessionStart) / 60000);
+            const progress = Math.min((elapsed / 20) * 100, 100);
+            const progressEl = document.getElementById('session-progress');
+            const timeEl = document.getElementById('session-time');
+            if (progressEl) progressEl.style.width = progress + '%';
+            if (timeEl) timeEl.textContent = elapsed;
+        }, 60000);
+
+        // Check YouTube status
+        if (localStorage.getItem('gg_youtube_verified') || localStorage.getItem('gg_youtube_pending')) {
+            const statusEl = document.getElementById('status-youtube');
+            if (statusEl) { statusEl.textContent = 'Completed'; statusEl.className = 'task-status completed'; }
+        }
+
+        // Update referral limit display
+        function updateReferralLimit() {
+            const count = userData?.referralCount || 0;
+            const limitEl = document.getElementById('referral-limit');
+            const statusEl = document.getElementById('status-referral');
+
+            if (limitEl) {
+                limitEl.textContent = `You have referred ${count} of 100 friends`;
+                if (count >= 100) {
+                    limitEl.classList.add('warning');
+                    limitEl.textContent = '⚠️ Maximum referral limit reached (100/100)';
+                    if (statusEl) {
+                        statusEl.textContent = 'Limit Reached';
+                        statusEl.className = 'task-status limited';
+                    }
+                }
+            }
+        }
+
+        // Update auth nav
+        function updateAuthNav() {
+            const authNav = document.getElementById('auth-nav-item');
+            if (isLoggedIn && currentUser) {
+                authNav.innerHTML = `<div class="user-points" onclick="location.href='profile.html'"><span class="points-icon">👤</span><span>${currentUser.displayName || 'Profile'}</span></div>`;
+            } else {
+                authNav.innerHTML = `<a href="login.html" class="auth-btn"><div class="user-points">Sign In</div></a>`;
+            }
+        }
+
+        // Initialize page
+        setTimeout(() => {
+            updateAuthNav();
+            updateReferralLimit();
+        }, 600);
+    </script>
+</body>
+</html>

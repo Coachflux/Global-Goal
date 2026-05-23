@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DMCA | Global Goal 2026</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .legal-page { max-width: 900px; margin: 0 auto; padding-top: 8rem; padding-bottom: 4rem; }
+        .legal-page h1 { font-size: 2.5rem; margin-bottom: 1rem; }
+        .legal-page h2 { font-size: 1.5rem; margin-top: 2.5rem; margin-bottom: 1rem; color: var(--gg-blue); }
+        .legal-page p { color: rgba(255, 255, 255, 0.7); line-height: 1.8; margin-bottom: 1rem; }
+        .legal-page ul { margin-left: 1.5rem; color: rgba(255,255,255,0.7); line-height: 1.8; margin-bottom: 1rem; }
+        .legal-page li { margin-bottom: 0.5rem; }
+    </style>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+</head>
+<body>
+
+    <nav id="navbar">
+        <div class="nav-container">
+            <a href="../index.html" class="logo"><div class="logo-icon">GG</div><span class="logo-text">GLOBAL GOAL</span></a>
+            <ul class="nav-links">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="earn-points.html">Earn Points</a></li>
+                <li><a href="leaderboard.html">Leaderboard</a></li>
+                <li><a href="prizes.html">Prizes</a></li>
+                <li><a href="highlights.html">Highlights</a></li>
+                <li><a href="referral.html">Refer & Earn</a></li>
+                <li id="auth-nav-item"><div class="user-points" onclick="location.href='profile.html'"><span class="points-icon">⚡</span><span id="nav-points">1,250</span> pts</div></li>
+            </ul>
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+        </div>
+    </nav>
+
+    <div class="legal-page">
+        <h1>DMCA Policy</h1>
+        <p>Global Goal 2026 respects intellectual property rights and complies with the Digital Millennium Copyright Act (DMCA).</p>
+
+        <h2>Reporting Copyright Infringement</h2>
+        <p>If you believe that content on our Platform infringes your copyright, please send a DMCA notice to:</p>
+        <p><strong>Email:</strong> dmca@globalgoal2026.com</p>
+
+        <p>Your notice must include:</p>
+        <ul>
+            <li>Your physical or electronic signature</li>
+            <li>Identification of the copyrighted work claimed to be infringed</li>
+            <li>Identification of the infringing material and its location on the site</li>
+            <li>Your contact information (address, phone, email)</li>
+            <li>A statement that you have a good faith belief that use is not authorized</li>
+            <li>A statement that the information is accurate, under penalty of perjury</li>
+        </ul>
+
+        <h2>Counter-Notification</h2>
+        <p>If you believe your content was removed in error, you may submit a counter-notification with the same contact information.</p>
+
+        <h2>Repeat Infringers</h2>
+        <p>We terminate accounts of repeat copyright infringers in appropriate circumstances.</p>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-brand"><span class="logo-text">GLOBAL GOAL 2026</span><p>Independent fan community. Not affiliated with FIFA.</p></div>
+            <div class="footer-links"><h4>Platform</h4><ul><li><a href="earn-points.html">Earn Points</a></li><li><a href="leaderboard.html">Leaderboard</a></li><li><a href="prizes.html">Prizes</a></li></ul></div>
+            <div class="footer-links"><h4>Legal</h4><ul><li><a href="terms.html">Terms</a></li><li><a href="privacy.html">Privacy</a></li><li><a href="contest-rules.html">Contest Rules</a></li></ul></div>
+        </div>
+        <div class="footer-bottom"><p>© 2026 Global Goal. All rights reserved. Not affiliated with FIFA.</p></div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+    <script>
+        function updateAuthNav() {
+            const authNav = document.getElementById('auth-nav-item');
+            if (isLoggedIn && currentUser) {
+                authNav.innerHTML = `<div class="user-points" onclick="location.href='profile.html'"><span class="points-icon">👤</span><span>${currentUser.displayName || 'Profile'}</span></div>`;
+            } else {
+                authNav.innerHTML = `<a href="login.html" class="auth-btn"><div class="user-points">Sign In</div></a>`;
+            }
+        }
+        setTimeout(updateAuthNav, 600);
+    </script>
+</body>
+</html>

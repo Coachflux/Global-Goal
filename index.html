@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Goal 2026 | Summer of Soccer Fan Hub</title>
+    <meta name="description" content="Join the ultimate football fan community. Earn points, win prizes, watch highlights, and celebrate the global game together.">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav id="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">GG</div>
+                <span class="logo-text">GLOBAL GOAL</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="pages/earn-points.html">Earn Points</a></li>
+                <li><a href="pages/leaderboard.html">Leaderboard</a></li>
+                <li><a href="pages/prizes.html">Prizes</a></li>
+                <li><a href="pages/highlights.html">Highlights</a></li>
+                <li><a href="pages/referral.html">Refer & Earn</a></li>
+                <li><a href="pages/about.html">About</a></li>
+                <li id="auth-nav-item"><div class="user-points" onclick="location.href='pages/profile.html'">
+                    <span class="points-icon">⚡</span>
+                    <span id="nav-points">1,250</span> pts
+                </div></li>
+            </ul>
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-bg"></div>
+        <div class="hero-grid"></div>
+        <div class="hero-content">
+            <div class="hero-badge">
+                <span class="live-dot"></span>
+                Summer of Soccer 2026
+            </div>
+            <h1>
+                <span class="gradient-text">The Global Game</span><br>
+                Unites Us All
+            </h1>
+            <p class="hero-subtitle">Join millions of fans celebrating football across North America. Earn points, win epic prizes, and be part of the community.</p>
+
+            <div class="hero-flags">
+                <div class="flag-item" onclick="exploreCity('usa')">
+                    <div class="flag-circle">🇺🇸</div>
+                    <span class="flag-label">United States</span>
+                </div>
+                <div class="flag-item" onclick="exploreCity('canada')">
+                    <div class="flag-circle">🇨🇦</div>
+                    <span class="flag-label">Canada</span>
+                </div>
+                <div class="flag-item" onclick="exploreCity('mexico')">
+                    <div class="flag-circle">🇲🇽</div>
+                    <span class="flag-label">Mexico</span>
+                </div>
+            </div>
+
+            <div class="cta-group">
+                <a href="pages/earn-points.html" class="btn btn-primary">Start Earning Points →</a>
+                <a href="pages/prizes.html" class="btn btn-gold">🏆 View Prizes</a>
+                <a href="pages/leaderboard.html" class="btn btn-outline">Leaderboard</a>
+            </div>
+
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <div class="stat-number">48</div>
+                    <div class="stat-label">Nations</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">104</div>
+                    <div class="stat-label">Matches</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">16</div>
+                    <div class="stat-label">Host Cities</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">3</div>
+                    <div class="stat-label">Countries</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Top Ad Banner -->
+    <div class="ad-container">
+        <span class="ad-label">Advertisement</span>
+        <div class="ad-placeholder leaderboard">
+            <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="XXXXXXXXXX" data-ad-format="horizontal" data-full-width-responsive="true"></ins>
+            <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        </div>
+    </div>
+
+    <!-- LEGAL DISCLAIMER -->
+    <div class="disclaimer">
+        <strong>IMPORTANT DISCLAIMER:</strong> Global Goal 2026 is an independent fan community platform and is NOT affiliated with, endorsed by, or sponsored by FIFA, the Fédération Internationale de Football Association, or the official FIFA World Cup 2026™ tournament. All references to the tournament are for editorial and informational purposes only. "FIFA World Cup" and related marks are trademarks of FIFA. Country flags and team names are used for editorial identification purposes only.
+    </div>
+
+    <!-- Points System Preview -->
+    <section class="points-preview" id="points">
+        <div class="section-header fade-in">
+            <span class="section-tag">Rewards Program</span>
+            <h2 class="section-title">Earn Points. Win Big.</h2>
+            <p class="section-desc">Complete simple tasks, climb the leaderboard, and redeem epic prizes. The more you engage, the more you earn.</p>
+        </div>
+
+        <div class="points-grid fade-in">
+            <div class="point-card">
+                <div class="point-icon">📺</div>
+                <div class="point-value">+50</div>
+                <div class="point-label">Watch Highlights</div>
+                <div class="point-desc">Watch match highlight videos embedded on our platform. Earn 50 points per video watched.</div>
+            </div>
+            <div class="point-card">
+                <div class="point-icon">👥</div>
+                <div class="point-value">+50</div>
+                <div class="point-label">Refer Friends</div>
+                <div class="point-desc">Share your unique referral link. Get 50 points for every friend who joins and completes their first task. (Max 100 referrals)</div>
+            </div>
+            <div class="point-card">
+                <div class="point-icon">▶️</div>
+                <div class="point-value">+100</div>
+                <div class="point-label">YouTube Subscribe</div>
+                <div class="point-desc">Subscribe to our YouTube channel and verify your subscription for a massive 100 point bonus.</div>
+            </div>
+            <div class="point-card">
+                <div class="point-icon">📅</div>
+                <div class="point-value">+20</div>
+                <div class="point-label">Daily Check-in</div>
+                <div class="point-desc">Visit the site daily and stay active for 20 minutes. Consistency pays with 20 points every day.</div>
+            </div>
+            <div class="point-card">
+                <div class="point-icon">⏱️</div>
+                <div class="point-value">+30</div>
+                <div class="point-label">Stay Active</div>
+                <div class="point-desc">Spend 20+ minutes browsing articles, watching content, and engaging with the community.</div>
+            </div>
+            <div class="point-card">
+                <div class="point-icon">📝</div>
+                <div class="point-value">+40</div>
+                <div class="point-label">Leave Comments</div>
+                <div class="point-desc">Share your thoughts on match discussions and articles. Quality comments earn 40 points each.</div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 3rem;">
+            <a href="pages/earn-points.html" class="btn btn-primary">View All Tasks →</a>
+        </div>
+    </section>
+
+    <!-- Mid-page Ad -->
+    <div class="ad-container">
+        <span class="ad-label">Advertisement</span>
+        <div class="ad-placeholder medium-rect">
+            <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="XXXXXXXXXX" data-ad-format="rectangle"></ins>
+            <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        </div>
+    </div>
+
+    <!-- Prizes Section -->
+    <section class="prizes-section" id="prizes">
+        <div class="section-header fade-in">
+            <span class="section-tag" style="background: rgba(251, 191, 36, 0.1); border-color: rgba(251, 191, 36, 0.3); color: var(--gg-gold);">Epic Prizes</span>
+            <h2 class="section-title">What You Can Win</h2>
+            <p class="section-desc">Save up your points and redeem them for incredible prizes. From gaming consoles to exclusive football gear.</p>
+        </div>
+
+        <div class="prizes-grid fade-in">
+            <div class="prize-card">
+                <div class="prize-image">🎮</div>
+                <div class="prize-info">
+                    <div class="prize-name">PlayStation 5 Console</div>
+                    <div class="prize-points">⚡ 5,000 Points</div>
+                    <div class="prize-desc">Brand new PS5 disc edition with DualSense controller. The ultimate gaming experience.</div>
+                </div>
+            </div>
+            <div class="prize-card">
+                <div class="prize-image">👟</div>
+                <div class="prize-info">
+                    <div class="prize-name">Nike Mercurial Boots</div>
+                    <div class="prize-points">⚡ 2,500 Points</div>
+                    <div class="prize-desc">Professional-grade football boots worn by the world's best players. Choose your size.</div>
+                </div>
+            </div>
+            <div class="prize-card">
+                <div class="prize-image">⚽</div>
+                <div class="prize-info">
+                    <div class="prize-name">Official Match Ball</div>
+                    <div class="prize-points">⚡ 1,500 Points</div>
+                    <div class="prize-desc">FIFA Quality Pro certified match ball. Perfect for training or display.</div>
+                </div>
+            </div>
+            <div class="prize-card">
+                <div class="prize-image">🎁</div>
+                <div class="prize-info">
+                    <div class="prize-name">$100 Gift Card</div>
+                    <div class="prize-points">⚡ 1,000 Points</div>
+                    <div class="prize-desc">Amazon, Nike, or Adidas gift card. Your choice! Redeemable worldwide.</div>
+                </div>
+            </div>
+            <div class="prize-card">
+                <div class="prize-image">👕</div>
+                <div class="prize-info">
+                    <div class="prize-name">Adidas Football Kit</div>
+                    <div class="prize-points">⚡ 800 Points</div>
+                    <div class="prize-desc">Authentic team jersey of your choice. Any nation, any player name.</div>
+                </div>
+            </div>
+            <div class="prize-card">
+                <div class="prize-image">🎧</div>
+                <div class="prize-info">
+                    <div class="prize-name">Premium Headphones</div>
+                    <div class="prize-points">⚡ 1,200 Points</div>
+                    <div class="prize-desc">Sony WH-1000XM5 noise-canceling headphones. Perfect for match commentary.</div>
+                </div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 3rem;">
+            <a href="pages/prizes.html" class="btn btn-gold">See Full Prize Catalog →</a>
+        </div>
+    </section>
+
+    <!-- Leaderboard Preview -->
+    <section class="leaderboard-section" id="leaderboard">
+        <div class="section-header fade-in">
+            <span class="section-tag">Competition</span>
+            <h2 class="section-title">Top Fans This Week</h2>
+            <p class="section-desc">Climb the ranks by completing tasks. Top performers get bonus rewards and exclusive recognition.</p>
+        </div>
+
+        <div class="leaderboard-table fade-in">
+            <div class="leaderboard-header">
+                <div>Rank</div>
+                <div>Fan</div>
+                <div>Points</div>
+                <div>Status</div>
+            </div>
+            <div class="leaderboard-row">
+                <div class="rank gold">#1</div>
+                <div class="user-info">
+                    <div class="user-avatar">JD</div>
+                    <span class="user-name">James_Dawson</span>
+                </div>
+                <div class="user-points-display">12,450</div>
+                <div><span class="user-badge vip">VIP</span></div>
+            </div>
+            <div class="leaderboard-row">
+                <div class="rank silver">#2</div>
+                <div class="user-info">
+                    <div class="user-avatar" style="background: linear-gradient(135deg, #8b5cf6, #ec4899);">MK</div>
+                    <span class="user-name">Maria_Kicks</span>
+                </div>
+                <div class="user-points-display">11,280</div>
+                <div><span class="user-badge vip">VIP</span></div>
+            </div>
+            <div class="leaderboard-row">
+                <div class="rank bronze">#3</div>
+                <div class="user-info">
+                    <div class="user-avatar" style="background: linear-gradient(135deg, #f59e0b, #ef4444);">AL</div>
+                    <span class="user-name">Alex_Lion</span>
+                </div>
+                <div class="user-points-display">10,950</div>
+                <div><span class="user-badge active">Active</span></div>
+            </div>
+            <div class="leaderboard-row">
+                <div class="rank">#4</div>
+                <div class="user-info">
+                    <div class="user-avatar" style="background: linear-gradient(135deg, #10b981, #3b82f6);">SR</div>
+                    <span class="user-name">Sam_Rooney</span>
+                </div>
+                <div class="user-points-display">9,640</div>
+                <div><span class="user-badge active">Active</span></div>
+            </div>
+            <div class="leaderboard-row">
+                <div class="rank">#5</div>
+                <div class="user-info">
+                    <div class="user-avatar" style="background: linear-gradient(135deg, #ef4444, #f97316);">TC</div>
+                    <span class="user-name">Toni_Cruz</span>
+                </div>
+                <div class="user-points-display">8,920</div>
+                <div><span class="user-badge active">Active</span></div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 2rem;">
+            <a href="pages/leaderboard.html" class="btn btn-outline">View Full Leaderboard →</a>
+        </div>
+    </section>
+
+    <!-- Tasks Section -->
+    <section class="tasks-section" id="tasks">
+        <div class="section-header fade-in">
+            <span class="section-tag">How It Works</span>
+            <h2 class="section-title">Complete Tasks. Earn Points.</h2>
+            <p class="section-desc">Getting started is easy. Pick a task, complete the action, and watch your points grow instantly.</p>
+        </div>
+
+        <div class="tasks-grid fade-in">
+            <div class="task-card">
+                <div class="task-icon">📺</div>
+                <div class="task-content">
+                    <div class="task-title">Watch Match Highlights</div>
+                    <div class="task-desc">Watch embedded highlight videos from recent matches. Must watch at least 80% of the video.</div>
+                    <div class="task-reward">⚡ +50 Points per video</div>
+                    <a href="pages/highlights.html" class="btn btn-primary task-btn">Watch Now</a>
+                </div>
+            </div>
+            <div class="task-card">
+                <div class="task-icon">👥</div>
+                <div class="task-content">
+                    <div class="task-title">Invite Your Friends</div>
+                    <div class="task-desc">Share your unique referral code. Friends must sign up and complete one task for you to earn. (Max 100 referrals)</div>
+                    <div class="task-reward">⚡ +50 Points per referral</div>
+                    <a href="pages/referral.html" class="btn btn-primary task-btn">Get Referral Link</a>
+                </div>
+            </div>
+            <div class="task-card">
+                <div class="task-icon">▶️</div>
+                <div class="task-content">
+                    <div class="task-title">Subscribe on YouTube</div>
+                    <div class="task-desc">Subscribe to our YouTube channel and paste your username below for verification.</div>
+                    <div class="task-reward">⚡ +100 Points (One-time)</div>
+                    <a href="pages/earn-points.html#youtube" class="btn btn-primary task-btn">Subscribe</a>
+                </div>
+            </div>
+            <div class="task-card">
+                <div class="task-icon">📅</div>
+                <div class="task-content">
+                    <div class="task-title">Daily Check-in</div>
+                    <div class="task-desc">Visit Global Goal daily and stay active. Points credited automatically after 20 minutes.</div>
+                    <div class="task-reward">⚡ +20 Points daily</div>
+                    <button class="btn btn-primary task-btn" onclick="claimDaily()">Claim Today</button>
+                </div>
+            </div>
+            <div class="task-card">
+                <div class="task-icon">⏱️</div>
+                <div class="task-content">
+                    <div class="task-title">Active Time Bonus</div>
+                    <div class="task-desc">Browse articles, read match analysis, and engage with content for 20+ minutes.</div>
+                    <div class="task-reward">⚡ +30 Points per session</div>
+                    <span style="font-size: 0.8rem; color: rgba(255,255,255,0.3);">Auto-tracked</span>
+                </div>
+            </div>
+            <div class="task-card">
+                <div class="task-icon">📝</div>
+                <div class="task-content">
+                    <div class="task-title">Comment & Discuss</div>
+                    <div class="task-desc">Leave thoughtful comments on match discussions and community articles.</div>
+                    <div class="task-reward">⚡ +40 Points per comment</div>
+                    <a href="pages/community.html" class="btn btn-primary task-btn">Join Discussion</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Bottom Ad -->
+    <div class="ad-container">
+        <span class="ad-label">Advertisement</span>
+        <div class="ad-placeholder leaderboard">
+            <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="XXXXXXXXXX" data-ad-format="horizontal" data-full-width-responsive="true"></ins>
+            <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        </div>
+    </div>
+
+    <!-- Newsletter -->
+    <section class="newsletter-section">
+        <div class="newsletter-container">
+            <h2 class="newsletter-title">Never Miss a Match Update</h2>
+            <p class="newsletter-desc">Get the latest scores, highlights, and exclusive point-boosting opportunities delivered to your inbox.</p>
+            <form class="newsletter-form" onsubmit="handleSubscribe(event)">
+                <input type="email" class="newsletter-input" placeholder="Enter your email address" required>
+                <button type="submit" class="btn" style="background: white; color: var(--gg-blue);">Subscribe</button>
+            </form>
+            <p style="font-size: 0.75rem; opacity: 0.6; margin-top: 1rem;">+50 bonus points for subscribing! Unsubscribe anytime.</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-brand">
+                <span class="logo-text">GLOBAL GOAL 2026</span>
+                <p>The ultimate independent fan community celebrating the global game. Earn points, win prizes, and connect with football fans worldwide. This is a fan-operated platform with no official affiliation to FIFA or the World Cup tournament.</p>
+            </div>
+            <div class="footer-links">
+                <h4>Platform</h4>
+                <ul>
+                    <li><a href="pages/earn-points.html">Earn Points</a></li>
+                    <li><a href="pages/leaderboard.html">Leaderboard</a></li>
+                    <li><a href="pages/prizes.html">Prizes</a></li>
+                    <li><a href="pages/highlights.html">Highlights</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Community</h4>
+                <ul>
+                    <li><a href="pages/referral.html">Refer Friends</a></li>
+                    <li><a href="pages/community.html">Discussions</a></li>
+                    <li><a href="pages/profile.html">My Profile</a></li>
+                    <li><a href="pages/faq.html">FAQ</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Legal</h4>
+                <ul>
+                    <li><a href="pages/terms.html">Terms of Service</a></li>
+                    <li><a href="pages/privacy.html">Privacy Policy</a></li>
+                    <li><a href="pages/contest-rules.html">Contest Rules</a></li>
+                    <li><a href="pages/dmca.html">DMCA</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Connect</h4>
+                <ul>
+                    <li><a href="#" target="_blank">YouTube</a></li>
+                    <li><a href="#" target="_blank">Twitter / X</a></li>
+                    <li><a href="#" target="_blank">Instagram</a></li>
+                    <li><a href="#" target="_blank">Discord</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2026 Global Goal. Independent Fan Community. All rights reserved. Not affiliated with FIFA.</p>
+            <div class="social-links">
+                <a href="#" target="_blank">𝕏</a>
+                <a href="#" target="_blank">f</a>
+                <a href="#" target="_blank">📷</a>
+                <a href="#" target="_blank">▶</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script>
+        // Update auth nav based on login state
+        function updateAuthNav() {
+            const authNav = document.getElementById('auth-nav-item');
+            if (isLoggedIn && currentUser) {
+                authNav.innerHTML = `<div class="user-points" onclick="location.href='pages/profile.html'"><span class="points-icon">👤</span><span>${currentUser.displayName || 'Profile'}</span></div>`;
+            } else {
+                authNav.innerHTML = `<a href="pages/login.html" class="auth-btn"><div class="user-points">Sign In</div></a>`;
+            }
+        }
+
+        // Call after auth state loads
+        setTimeout(updateAuthNav, 600);
+    </script>
+</body>
+</html>
