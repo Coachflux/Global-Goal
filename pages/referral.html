@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Refer & Earn | Global Goal 2026</title>
+    <meta name="description" content="Invite friends to Global Goal 2026 and earn 50 points for every referral. Maximum 100 referrals per user.">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .page-header { padding-top: 8rem; padding-bottom: 2rem; text-align: center; }
+        .referral-container { max-width: 800px; margin: 0 auto; }
+        .ref-card {
+            background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 24px; padding: 3rem; text-align: center; margin-bottom: 2rem;
+        }
+        .ref-card h2 { font-size: 2rem; margin-bottom: 1rem; }
+        .ref-card p { color: rgba(255, 255, 255, 0.6); margin-bottom: 2rem; }
+        .ref-link-box {
+            background: rgba(255, 255, 255, 0.03); border: 2px solid rgba(37, 99, 235, 0.3);
+            border-radius: 16px; padding: 1.5rem; display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; margin-bottom: 1.5rem;
+        }
+        .ref-link-input {
+            flex: 1; background: transparent; border: none; color: white; font-size: 1rem; font-family: 'Inter', sans-serif; outline: none;
+        }
+        .ref-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 2rem; }
+        .ref-stat { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 1.5rem; text-align: center; }
+        .ref-stat-value { font-family: 'Montserrat', sans-serif; font-size: 2rem; font-weight: 800; color: var(--gg-gold); }
+        .ref-stat-label { font-size: 0.8rem; color: rgba(255, 255, 255, 0.5); margin-top: 0.3rem; }
+        .share-buttons { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; }
+        .share-btn { padding: 0.8rem 1.5rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.02); color: white; cursor: pointer; transition: all 0.3s; font-weight: 600; font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem; }
+        .share-btn:hover { transform: translateY(-2px); }
+        .share-btn.twitter:hover { background: #1da1f2; border-color: #1da1f2; }
+        .share-btn.facebook:hover { background: #4267B2; border-color: #4267B2; }
+        .share-btn.whatsapp:hover { background: #25D366; border-color: #25D366; }
+        .share-btn.email:hover { background: #EA4335; border-color: #EA4335; }
+        .how-it-works { max-width: 800px; margin: 3rem auto; }
+        .step { display: flex; gap: 1.5rem; margin-bottom: 2rem; align-items: flex-start; }
+        .step-number {
+            width: 50px; height: 50px; border-radius: 50%; background: var(--gradient-primary);
+            display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.2rem; flex-shrink: 0;
+        }
+        .step-content h3 { font-size: 1.1rem; margin-bottom: 0.5rem; }
+        .step-content p { color: rgba(255, 255, 255, 0.6); font-size: 0.9rem; line-height: 1.6; }
+        .leaderboard-preview { max-width: 600px; margin: 2rem auto; }
+        .referral-progress { max-width: 600px; margin: 0 auto 2rem; }
+        .progress-bar-full { width: 100%; height: 12px; background: rgba(255,255,255,0.05); border-radius: 6px; overflow: hidden; }
+        .progress-fill-full { height: 100%; background: var(--gradient-primary); border-radius: 6px; transition: width 0.5s ease; }
+        .progress-label { display: flex; justify-content: space-between; margin-top: 0.5rem; font-size: 0.85rem; opacity: 0.6; }
+        .limit-warning { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 12px; padding: 1rem; margin-top: 1rem; color: #ef4444; font-size: 0.9rem; }
+        .limit-warning.hidden { display: none; }
+        .auth-required { text-align: center; padding: 3rem; background: rgba(255,255,255,0.02); border-radius: 20px; margin-bottom: 2rem; }
+        .auth-required p { opacity: 0.6; margin-bottom: 1.5rem; }
+    </style>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
+</head>
+<body>
+
+    <nav id="navbar">
+        <div class="nav-container">
+            <a href="../index.html" class="logo"><div class="logo-icon">GG</div><span class="logo-text">GLOBAL GOAL</span></a>
+            <ul class="nav-links">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="earn-points.html">Earn Points</a></li>
+                <li><a href="leaderboard.html">Leaderboard</a></li>
+                <li><a href="prizes.html">Prizes</a></li>
+                <li><a href="highlights.html">Highlights</a></li>
+                <li><a href="referral.html">Refer & Earn</a></li>
+                <li id="auth-nav-item"><div class="user-points" onclick="location.href='profile.html'"><span class="points-icon">⚡</span><span id="nav-points">1,250</span> pts</div></li>
+            </ul>
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+        </div>
+    </nav>
+
+    <div class="page-header">
+        <span class="section-tag">Referral Program</span>
+        <h1 class="section-title">Refer Friends & Earn</h1>
+        <p class="section-desc">Share your unique link. Earn 50 points for every friend who joins and completes their first task. Maximum 100 referrals!</p>
+    </div>
+
+    <!-- Auth Required Notice -->
+    <section style="padding-top: 0; max-width: 800px; margin: 0 auto;" id="auth-section">
+        <div class="auth-required" id="auth-notice" style="display: none;">
+            <h3 style="margin-bottom: 1rem;">🔒 Sign In Required</h3>
+            <p>You need to be signed in to access your referral link and track your referrals.</p>
+            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                <a href="login.html" class="btn btn-primary">Sign In</a>
+                <a href="signup.html" class="btn btn-outline">Create Account</a>
+            </div>
+        </div>
+    </section>
+
+    <section style="padding-top: 0;" id="referral-content">
+        <div class="referral-container">
+            <div class="ref-card">
+                <h2>Your Referral Link</h2>
+                <p>Copy and share this link with your friends. When they sign up and complete a task, you both get 50 points instantly.</p>
+
+                <div class="ref-link-box">
+                    <input type="text" class="ref-link-input" id="ref-link-input" readonly value="https://globalgoal2026.com/?ref=GG8X2K9M">
+                    <button class="btn btn-primary" onclick="copyRefLink()">📋 Copy</button>
+                </div>
+
+                <!-- Referral Progress -->
+                <div class="referral-progress">
+                    <div class="progress-bar-full">
+                        <div class="progress-fill-full" id="ref-progress" style="width: 2%"></div>
+                    </div>
+                    <div class="progress-label">
+                        <span id="ref-count">2 referrals</span>
+                        <span>Max: 100</span>
+                    </div>
+                </div>
+
+                <div class="limit-warning hidden" id="limit-warning">
+                    ⚠️ You have reached the maximum referral limit of 100 friends. Great job!
+                </div>
+
+                <div class="ref-stats">
+                    <div class="ref-stat">
+                        <div class="ref-stat-value" id="ref-clicks">47</div>
+                        <div class="ref-stat-label">Link Clicks</div>
+                    </div>
+                    <div class="ref-stat">
+                        <div class="ref-stat-value" id="ref-signups">12</div>
+                        <div class="ref-stat-label">Friends Joined</div>
+                    </div>
+                    <div class="ref-stat">
+                        <div class="ref-stat-value" id="ref-points">600</div>
+                        <div class="ref-stat-label">Points Earned</div>
+                    </div>
+                </div>
+
+                <div class="share-buttons">
+                    <button class="share-btn twitter" onclick="shareTwitter()">𝕏 Twitter</button>
+                    <button class="share-btn facebook" onclick="shareFacebook()">f Facebook</button>
+                    <button class="share-btn whatsapp" onclick="shareWhatsApp()">📱 WhatsApp</button>
+                    <button class="share-btn email" onclick="shareEmail()">✉ Email</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Ad -->
+    <div class="ad-container" style="max-width: 800px;">
+        <span class="ad-label">Advertisement</span>
+        <div class="ad-placeholder leaderboard">
+            <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="XXXXXXXXXX" data-ad-format="horizontal" data-full-width-responsive="true"></ins>
+            <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        </div>
+    </div>
+
+    <!-- How It Works -->
+    <section>
+        <div class="section-header fade-in">
+            <span class="section-tag">Process</span>
+            <h2 class="section-title">How Referrals Work</h2>
+        </div>
+        <div class="how-it-works fade-in">
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h3>Copy Your Link</h3>
+                    <p>Your unique referral code is automatically generated. Click the copy button above to grab your personalized link.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h3>Share With Friends</h3>
+                    <p>Post on social media, send via WhatsApp, or email directly. The more friends you invite, the more you earn.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h3>They Join & Complete a Task</h3>
+                    <p>Your friend signs up using your link and completes any task (watch a video, check in daily, etc.).</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <h3>Both Get 50 Points!</h3>
+                    <p>Instant reward! You get 50 points, your friend gets 50 points. Win-win for everyone. (Max 100 referrals)</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Top Referrers -->
+    <section style="background: var(--gg-dark);">
+        <div class="section-header fade-in">
+            <span class="section-tag">Top Performers</span>
+            <h2 class="section-title">Top Referrers This Month</h2>
+        </div>
+        <div class="leaderboard-preview fade-in">
+            <div class="leaderboard-list">
+                <div class="lb-row">
+                    <div class="lb-rank gold">#1</div>
+                    <div class="lb-user"><div class="lb-avatar" style="background: var(--gradient-primary);">DK</div><span class="lb-name">David_Kim</span></div>
+                    <div class="lb-points">89 refs</div>
+                    <div><span class="lb-badge vip">VIP</span></div>
+                </div>
+                <div class="lb-row">
+                    <div class="lb-rank silver">#2</div>
+                    <div class="lb-user"><div class="lb-avatar" style="background: linear-gradient(135deg, #8b5cf6, #ec4899);">SO</div><span class="lb-name">Sarah_Okafor</span></div>
+                    <div class="lb-points">76 refs</div>
+                    <div><span class="lb-badge vip">VIP</span></div>
+                </div>
+                <div class="lb-row">
+                    <div class="lb-rank bronze">#3</div>
+                    <div class="lb-user"><div class="lb-avatar" style="background: linear-gradient(135deg, #f59e0b, #ef4444);">LW</div><span class="lb-name">Liam_Walker</span></div>
+                    <div class="lb-points">64 refs</div>
+                    <div><span class="lb-badge active">Active</span></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-brand"><span class="logo-text">GLOBAL GOAL 2026</span><p>Independent fan community. Not affiliated with FIFA.</p></div>
+            <div class="footer-links"><h4>Platform</h4><ul><li><a href="earn-points.html">Earn Points</a></li><li><a href="leaderboard.html">Leaderboard</a></li><li><a href="prizes.html">Prizes</a></li></ul></div>
+            <div class="footer-links"><h4>Legal</h4><ul><li><a href="terms.html">Terms</a></li><li><a href="privacy.html">Privacy</a></li><li><a href="contest-rules.html">Contest Rules</a></li></ul></div>
+        </div>
+        <div class="footer-bottom"><p>© 2026 Global Goal. All rights reserved. Not affiliated with FIFA.</p></div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+    <script>
+        function copyRefLink() {
+            const input = document.getElementById('ref-link-input');
+            input.select();
+            navigator.clipboard.writeText(input.value).then(() => {
+                showNotification('Copied!', 'Referral link copied to clipboard.', 'success');
+            });
+        }
+
+        function shareTwitter() {
+            const text = encodeURIComponent('Join Global Goal 2026 and earn points to win prizes! 🏆⚽');
+            const url = encodeURIComponent(document.getElementById('ref-link-input').value);
+            window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
+        }
+
+        function shareFacebook() {
+            const url = encodeURIComponent(document.getElementById('ref-link-input').value);
+            window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank');
+        }
+
+        function shareWhatsApp() {
+            const text = encodeURIComponent('Join Global Goal 2026 and earn points to win prizes! 🏆⚽ ' + document.getElementById('ref-link-input').value);
+            window.open(`https://wa.me/?text=${text}`, '_blank');
+        }
+
+        function shareEmail() {
+            const subject = encodeURIComponent('Join Global Goal 2026 - Win Prizes!');
+            const body = encodeURIComponent(`Hey!
+
+Check out Global Goal 2026 - a fan community where you can earn points and win prizes like PlayStation 5, Nike boots, and gift cards!
+
+Join here: ${document.getElementById('ref-link-input').value}
+
+Let's compete on the leaderboard together!`);
+            window.open(`mailto:?subject=${subject}&body=${body}`, '_blank');
+        }
+
+        // Update referral progress
+        function updateReferralProgress() {
+            const count = userData?.referralCount || 2;
+            const max = 100;
+            const percentage = Math.min((count / max) * 100, 100);
+
+            document.getElementById('ref-progress').style.width = percentage + '%';
+            document.getElementById('ref-count').textContent = `${count} of ${max} referrals`;
+
+            const warning = document.getElementById('limit-warning');
+            if (count >= max) {
+                warning.classList.remove('hidden');
+            } else {
+                warning.classList.add('hidden');
+            }
+
+            // Update stats
+            document.getElementById('ref-signups').textContent = count;
+            document.getElementById('ref-points').textContent = (count * 50).toLocaleString();
+        }
+
+        // Check auth state
+        function checkAuth() {
+            const notice = document.getElementById('auth-notice');
+            const content = document.getElementById('referral-content');
+
+            if (!isLoggedIn) {
+                if (notice) notice.style.display = 'block';
+                if (content) content.style.display = 'none';
+            } else {
+                if (notice) notice.style.display = 'none';
+                if (content) content.style.display = 'block';
+
+                // Update link with user's actual code
+                if (userData?.referralCode) {
+                    document.getElementById('ref-link-input').value = `https://globalgoal2026.com/?ref=${userData.referralCode}`;
+                }
+            }
+        }
+
+        // Update auth nav
+        function updateAuthNav() {
+            const authNav = document.getElementById('auth-nav-item');
+            if (isLoggedIn && currentUser) {
+                authNav.innerHTML = `<div class="user-points" onclick="location.href='profile.html'"><span class="points-icon">👤</span><span>${currentUser.displayName || 'Profile'}</span></div>`;
+            } else {
+                authNav.innerHTML = `<a href="login.html" class="auth-btn"><div class="user-points">Sign In</div></a>`;
+            }
+        }
+
+        // Initialize
+        setTimeout(() => {
+            updateAuthNav();
+            checkAuth();
+            updateReferralProgress();
+        }, 600);
+    </script>
+</body>
+</html>

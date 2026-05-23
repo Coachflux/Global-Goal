@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community | Global Goal 2026</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .page-header { padding-top: 8rem; padding-bottom: 2rem; text-align: center; }
+        .community-container { max-width: 1000px; margin: 0 auto; }
+        .topic-card { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 1.5rem; margin-bottom: 1rem; transition: all 0.3s; }
+        .topic-card:hover { border-color: rgba(37, 99, 235, 0.2); }
+        .topic-title { font-weight: 700; font-size: 1.1rem; margin-bottom: 0.5rem; }
+        .topic-meta { display: flex; gap: 1rem; font-size: 0.8rem; opacity: 0.5; margin-bottom: 0.5rem; }
+        .topic-desc { opacity: 0.7; font-size: 0.9rem; line-height: 1.5; }
+        .topic-stats { display: flex; gap: 1rem; margin-top: 1rem; font-size: 0.8rem; }
+        .topic-stat { background: rgba(255,255,255,0.03); padding: 0.3rem 0.8rem; border-radius: 50px; }
+    </style>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+</head>
+<body>
+    <nav id="navbar">
+        <div class="nav-container">
+            <a href="../index.html" class="logo"><div class="logo-icon">GG</div><span class="logo-text">GLOBAL GOAL</span></a>
+            <ul class="nav-links">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="earn-points.html">Earn Points</a></li>
+                <li><a href="leaderboard.html">Leaderboard</a></li>
+                <li><a href="prizes.html">Prizes</a></li>
+                <li><a href="highlights.html">Highlights</a></li>
+                <li><a href="referral.html">Refer & Earn</a></li>
+                <li id="auth-nav-item"><div class="user-points" onclick="location.href='profile.html'"><span class="points-icon">⚡</span><span id="nav-points">1,250</span> pts</div></li>
+            </ul>
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+        </div>
+    </nav>
+    <div class="page-header">
+        <span class="section-tag">Community</span>
+        <h1 class="section-title">Match Discussions</h1>
+        <p class="section-desc">Join the conversation. Share your thoughts and earn 40 points per quality comment.</p>
+    </div>
+    <section style="padding-top: 0;">
+        <div class="community-container">
+            <div class="topic-card">
+                <div class="topic-title">🏆 World Cup 2026 Predictions</div>
+                <div class="topic-meta">Started by James_Dawson • 2 hours ago</div>
+                <div class="topic-desc">Who do you think will lift the trophy in 2026? Share your predictions and analysis for the expanded 48-team tournament.</div>
+                <div class="topic-stats">
+                    <span class="topic-stat">💬 128 comments</span>
+                    <span class="topic-stat">👁 1.2k views</span>
+                    <span class="topic-stat">🔥 Hot</span>
+                </div>
+            </div>
+            <div class="topic-card">
+                <div class="topic-title">⚽ Best Goals of the Season</div>
+                <div class="topic-meta">Started by Maria_Kicks • 5 hours ago</div>
+                <div class="topic-desc">Share your favorite goals from this season. From bicycle kicks to last-minute winners, let's celebrate the best moments.</div>
+                <div class="topic-stats">
+                    <span class="topic-stat">💬 84 comments</span>
+                    <span class="topic-stat">👁 890 views</span>
+                    <span class="topic-stat">📌 Pinned</span>
+                </div>
+            </div>
+            <div class="topic-card">
+                <div class="topic-title">🌍 Host Cities Guide</div>
+                <div class="topic-meta">Started by Alex_Lion • 1 day ago</div>
+                <div class="topic-desc">Planning to attend matches? Share tips about the 16 host cities across USA, Canada, and Mexico.</div>
+                <div class="topic-stats">
+                    <span class="topic-stat">💬 56 comments</span>
+                    <span class="topic-stat">👁 650 views</span>
+                    <span class="topic-stat">📍 Travel</span>
+                </div>
+            </div>
+            <div class="topic-card">
+                <div class="topic-title">🎮 FIFA Gaming Tournament</div>
+                <div class="topic-meta">Started by Sam_Rooney • 2 days ago</div>
+                <div class="topic-desc">Join our community FIFA tournament! Winner gets bonus points and bragging rights.</div>
+                <div class="topic-stats">
+                    <span class="topic-stat">💬 42 comments</span>
+                    <span class="topic-stat">👁 430 views</span>
+                    <span class="topic-stat">🎮 Gaming</span>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer>
+        <div class="footer-content">
+            <div class="footer-brand"><span class="logo-text">GLOBAL GOAL 2026</span><p>Independent fan community. Not affiliated with FIFA.</p></div>
+            <div class="footer-links"><h4>Platform</h4><ul><li><a href="earn-points.html">Earn Points</a></li><li><a href="leaderboard.html">Leaderboard</a></li><li><a href="prizes.html">Prizes</a></li></ul></div>
+            <div class="footer-links"><h4>Legal</h4><ul><li><a href="terms.html">Terms</a></li><li><a href="privacy.html">Privacy</a></li><li><a href="contest-rules.html">Contest Rules</a></li></ul></div>
+        </div>
+        <div class="footer-bottom"><p>© 2026 Global Goal. All rights reserved. Not affiliated with FIFA.</p></div>
+    </footer>
+    <script src="../js/main.js"></script>
+    <script>
+        function updateAuthNav() {
+            const authNav = document.getElementById('auth-nav-item');
+            if (isLoggedIn && currentUser) {
+                authNav.innerHTML = `<div class="user-points" onclick="location.href='profile.html'"><span class="points-icon">👤</span><span>${currentUser.displayName || 'Profile'}</span></div>`;
+            } else {
+                authNav.innerHTML = `<a href="login.html" class="auth-btn"><div class="user-points">Sign In</div></a>`;
+            }
+        }
+        setTimeout(updateAuthNav, 600);
+    </script>
+</body>
+</html>

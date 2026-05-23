@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Match Highlights | Global Goal 2026</title>
+    <meta name="description" content="Watch football match highlights and earn 50 points per video. The best moments from the global game.">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .page-header { padding-top: 8rem; padding-bottom: 2rem; text-align: center; }
+        .videos-grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 2rem; }
+        .video-card {
+            background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 20px; overflow: hidden; transition: all 0.4s ease;
+        }
+        .video-card:hover { border-color: rgba(37, 99, 235, 0.2); transform: translateY(-5px); }
+        .video-player {
+            position: relative; padding-bottom: 56.25%; background: var(--gg-card);
+        }
+        .video-player iframe {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;
+        }
+        .video-info { padding: 1.5rem; }
+        .video-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .video-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem; }
+        .video-tags { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+        .video-tag { padding: 0.2rem 0.6rem; background: rgba(37, 99, 235, 0.1); border: 1px solid rgba(37, 99, 235, 0.2); border-radius: 50px; font-size: 0.75rem; color: var(--gg-blue); }
+        .video-reward { display: inline-flex; align-items: center; gap: 0.3rem; color: var(--gg-gold); font-weight: 700; font-size: 0.85rem; }
+        .watch-btn { width: 100%; margin-top: 1rem; }
+        .watch-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .watch-btn.claimed { background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.3); color: var(--gg-green); }
+        .filter-tabs { display: flex; justify-content: center; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap; }
+        .filter-tab { padding: 0.5rem 1.2rem; border-radius: 50px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.02); color: rgba(255,255,255,0.6); cursor: pointer; transition: all 0.3s; font-weight: 600; font-size: 0.85rem; }
+        .filter-tab.active { background: var(--gradient-primary); color: white; border-color: transparent; }
+        .filter-tab:hover:not(.active) { border-color: rgba(255,255,255,0.3); color: white; }
+    </style>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
+</head>
+<body>
+
+    <nav id="navbar">
+        <div class="nav-container">
+            <a href="../index.html" class="logo"><div class="logo-icon">GG</div><span class="logo-text">GLOBAL GOAL</span></a>
+            <ul class="nav-links">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="earn-points.html">Earn Points</a></li>
+                <li><a href="leaderboard.html">Leaderboard</a></li>
+                <li><a href="prizes.html">Prizes</a></li>
+                <li><a href="highlights.html">Highlights</a></li>
+                <li><a href="referral.html">Refer & Earn</a></li>
+                <li id="auth-nav-item"><div class="user-points" onclick="location.href='profile.html'"><span class="points-icon">⚡</span><span id="nav-points">1,250</span> pts</div></li>
+            </ul>
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+        </div>
+    </nav>
+
+    <div class="page-header">
+        <span class="section-tag">Video Content</span>
+        <h1 class="section-title">Match Highlights</h1>
+        <p class="section-desc">Watch incredible football moments. Earn 50 points for every video you watch. New highlights added daily!</p>
+    </div>
+
+    <!-- Ad -->
+    <div class="ad-container" style="max-width: 1200px;">
+        <span class="ad-label">Advertisement</span>
+        <div class="ad-placeholder leaderboard">
+            <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="XXXXXXXXXX" data-ad-format="horizontal" data-full-width-responsive="true"></ins>
+            <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <section style="padding-bottom: 1rem;">
+        <div class="filter-tabs">
+            <button class="filter-tab active" onclick="filterVideos('all')">All Highlights</button>
+            <button class="filter-tab" onclick="filterVideos('goals')">Best Goals</button>
+            <button class="filter-tab" onclick="filterVideos('saves')">Top Saves</button>
+            <button class="filter-tab" onclick="filterVideos('skills')">Skills</button>
+            <button class="filter-tab" onclick="filterVideos('fails')">Funny Moments</button>
+        </div>
+    </section>
+
+    <!-- Videos Grid -->
+    <section style="padding-top: 0;">
+        <div class="videos-grid" id="videos-grid">
+            <!-- Video 1 -->
+            <div class="video-card" data-category="goals">
+                <div class="video-player">
+                    <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="Highlight Video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+                <div class="video-info">
+                    <div class="video-title">Incredible Bicycle Kick Goal</div>
+                    <div class="video-meta">
+                        <div class="video-tags">
+                            <span class="video-tag">Goal</span>
+                            <span class="video-tag">Bicycle Kick</span>
+                        </div>
+                        <div class="video-reward">⚡ +50 Points</div>
+                    </div>
+                    <button class="btn btn-primary watch-btn" id="btn-vid-1" onclick="watchVideo('vid-1', 50)">▶ Watch & Earn Points</button>
+                </div>
+            </div>
+
+            <!-- Video 2 -->
+            <div class="video-card" data-category="saves">
+                <div class="video-player">
+                    <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="Highlight Video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+                <div class="video-info">
+                    <div class="video-title">Goalkeeper's Impossible Save</div>
+                    <div class="video-meta">
+                        <div class="video-tags">
+                            <span class="video-tag">Save</span>
+                            <span class="video-tag">Top 10</span>
+                        </div>
+                        <div class="video-reward">⚡ +50 Points</div>
+                    </div>
+                    <button class="btn btn-primary watch-btn" id="btn-vid-2" onclick="watchVideo('vid-2', 50)">▶ Watch & Earn Points</button>
+                </div>
+            </div>
+
+            <!-- Video 3 -->
+            <div class="video-card" data-category="skills">
+                <div class="video-player">
+                    <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="Highlight Video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+                <div class="video-info">
+                    <div class="video-title">Messi-esque Dribbling Skills</div>
+                    <div class="video-meta">
+                        <div class="video-tags">
+                            <span class="video-tag">Skills</span>
+                            <span class="video-tag">Dribble</span>
+                        </div>
+                        <div class="video-reward">⚡ +50 Points</div>
+                    </div>
+                    <button class="btn btn-primary watch-btn" id="btn-vid-3" onclick="watchVideo('vid-3', 50)">▶ Watch & Earn Points</button>
+                </div>
+            </div>
+
+            <!-- Video 4 -->
+            <div class="video-card" data-category="goals">
+                <div class="video-player">
+                    <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="Highlight Video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+                <div class="video-info">
+                    <div class="video-title">Last-Minute Winner Celebration</div>
+                    <div class="video-meta">
+                        <div class="video-tags">
+                            <span class="video-tag">Goal</span>
+                            <span class="video-tag">Drama</span>
+                        </div>
+                        <div class="video-reward">⚡ +50 Points</div>
+                    </div>
+                    <button class="btn btn-primary watch-btn" id="btn-vid-4" onclick="watchVideo('vid-4', 50)">▶ Watch & Earn Points</button>
+                </div>
+            </div>
+
+            <!-- Video 5 -->
+            <div class="video-card" data-category="fails">
+                <div class="video-player">
+                    <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="Highlight Video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+                <div class="video-info">
+                    <div class="video-title">Funniest Own Goals Compilation</div>
+                    <div class="video-meta">
+                        <div class="video-tags">
+                            <span class="video-tag">Funny</span>
+                            <span class="video-tag">Compilation</span>
+                        </div>
+                        <div class="video-reward">⚡ +50 Points</div>
+                    </div>
+                    <button class="btn btn-primary watch-btn" id="btn-vid-5" onclick="watchVideo('vid-5', 50)">▶ Watch & Earn Points</button>
+                </div>
+            </div>
+
+            <!-- Video 6 -->
+            <div class="video-card" data-category="skills">
+                <div class="video-player">
+                    <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="Highlight Video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+                <div class="video-info">
+                    <div class="video-title">Free Kick Masterclass Tutorial</div>
+                    <div class="video-meta">
+                        <div class="video-tags">
+                            <span class="video-tag">Tutorial</span>
+                            <span class="video-tag">Free Kick</span>
+                        </div>
+                        <div class="video-reward">⚡ +50 Points</div>
+                    </div>
+                    <button class="btn btn-primary watch-btn" id="btn-vid-6" onclick="watchVideo('vid-6', 50)">▶ Watch & Earn Points</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Ad -->
+    <div class="ad-container" style="max-width: 1200px;">
+        <span class="ad-label">Advertisement</span>
+        <div class="ad-placeholder medium-rect">
+            <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="XXXXXXXXXX" data-ad-format="rectangle"></ins>
+            <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        </div>
+    </div>
+
+    <!-- More Coming -->
+    <section style="text-align: center; padding-top: 2rem;">
+        <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">More Highlights Coming Soon</h3>
+        <p style="color: rgba(255,255,255,0.5); margin-bottom: 2rem;">We add new videos after every match day. Subscribe to get notified!</p>
+        <a href="earn-points.html" class="btn btn-outline">Back to Task Center</a>
+    </section>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-brand"><span class="logo-text">GLOBAL GOAL 2026</span><p>Independent fan community. Not affiliated with FIFA.</p></div>
+            <div class="footer-links"><h4>Platform</h4><ul><li><a href="earn-points.html">Earn Points</a></li><li><a href="leaderboard.html">Leaderboard</a></li><li><a href="prizes.html">Prizes</a></li></ul></div>
+            <div class="footer-links"><h4>Legal</h4><ul><li><a href="terms.html">Terms</a></li><li><a href="privacy.html">Privacy</a></li><li><a href="contest-rules.html">Contest Rules</a></li></ul></div>
+        </div>
+        <div class="footer-bottom"><p>© 2026 Global Goal. All rights reserved. Not affiliated with FIFA.</p></div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+    <script>
+        // Check watched status on load
+        document.addEventListener('DOMContentLoaded', () => {
+            for (let i = 1; i <= 6; i++) {
+                const watched = localStorage.getItem(`gg_video_vid-${i}`);
+                const btn = document.getElementById(`btn-vid-${i}`);
+                if (watched && btn) {
+                    btn.textContent = '✓ Already Watched (+50 pts)';
+                    btn.classList.add('claimed');
+                    btn.disabled = true;
+                }
+            }
+        });
+
+        function filterVideos(category) {
+            document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+
+            document.querySelectorAll('.video-card').forEach(card => {
+                if (category === 'all' || card.dataset.category === category) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Override watchVideo for this page
+        function watchVideo(videoId, points) {
+            const watched = localStorage.getItem(`gg_video_${videoId}`);
+            if (watched) {
+                showNotification('Already Watched', 'You already earned points for this video.', 'error');
+                return;
+            }
+
+            const btn = document.getElementById(`btn-${videoId}`);
+            if (btn) {
+                btn.textContent = '▶ Watching... (stay on page)';
+                btn.disabled = true;
+            }
+
+            // Simulate watch time (in production, use YouTube API or actual video events)
+            showNotification('Video Started', 'Watch the full video to earn points!', 'success');
+
+            setTimeout(() => {
+                addPoints(points, `Watched highlight video ${videoId}`);
+                localStorage.setItem(`gg_video_${videoId}`, 'true');
+                if (userData) userData.videosWatched = (userData.videosWatched || 0) + 1;
+                saveLocalData();
+                if (btn) {
+                    btn.textContent = '✓ Watched! (+50 pts)';
+                    btn.classList.add('claimed');
+                }
+            }, 8000); // 8 second simulation for demo
+        }
+
+        // Update auth nav
+        function updateAuthNav() {
+            const authNav = document.getElementById('auth-nav-item');
+            if (isLoggedIn && currentUser) {
+                authNav.innerHTML = `<div class="user-points" onclick="location.href='profile.html'"><span class="points-icon">👤</span><span>${currentUser.displayName || 'Profile'}</span></div>`;
+            } else {
+                authNav.innerHTML = `<a href="login.html" class="auth-btn"><div class="user-points">Sign In</div></a>`;
+            }
+        }
+
+        setTimeout(updateAuthNav, 600);
+    </script>
+</body>
+</html>

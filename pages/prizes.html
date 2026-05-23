@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prizes & Rewards | Global Goal 2026</title>
+    <meta name="description" content="Redeem your points for PlayStation 5, Nike boots, gift cards, and more exclusive prizes.">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .page-header { padding-top: 8rem; padding-bottom: 2rem; text-align: center; }
+        .prizes-full { max-width: 1200px; margin: 0 auto; }
+        .prize-detail {
+            background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 24px; overflow: hidden; transition: all 0.4s ease; display: grid;
+            grid-template-columns: 1fr 2fr; margin-bottom: 2rem;
+        }
+        .prize-detail:hover { border-color: rgba(251, 191, 36, 0.2); transform: translateY(-3px); }
+        .prize-visual {
+            background: var(--gg-card); display: flex; align-items: center; justify-content: center;
+            font-size: 5rem; min-height: 250px; position: relative; overflow: hidden;
+        }
+        .prize-visual::after {
+            content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 50%;
+            background: linear-gradient(to top, var(--gg-card), transparent);
+        }
+        .prize-details { padding: 2rem; display: flex; flex-direction: column; justify-content: center; }
+        .prize-name-lg { font-size: 1.5rem; font-weight: 800; margin-bottom: 0.5rem; }
+        .prize-points-lg { display: inline-flex; align-items: center; gap: 0.5rem; font-family: 'Montserrat', sans-serif; font-size: 1.2rem; font-weight: 800; color: var(--gg-gold); margin-bottom: 1rem; }
+        .prize-desc-lg { color: rgba(255, 255, 255, 0.6); line-height: 1.8; margin-bottom: 1.5rem; }
+        .prize-meta { display: flex; gap: 1.5rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+        .prize-meta-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: rgba(255, 255, 255, 0.5); }
+        .redeem-btn { align-self: flex-start; }
+        .redeem-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .points-needed { font-size: 0.8rem; color: rgba(255, 255, 255, 0.4); margin-top: 0.5rem; }
+        .tier-section { margin-bottom: 3rem; }
+        .tier-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
+        .tier-line { flex: 1; height: 1px; background: rgba(255, 255, 255, 0.1); }
+        .tier-name { font-size: 1.2rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; }
+        .tier-name.bronze { color: #cd7f32; }
+        .tier-name.silver { color: #c0c0c0; }
+        .tier-name.gold { color: var(--gg-gold); }
+        .tier-name.platinum { color: var(--gg-purple); }
+        .prizes-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+        .prize-sm {
+            background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px; padding: 1.5rem; text-align: center; transition: all 0.3s;
+        }
+        .prize-sm:hover { border-color: rgba(251, 191, 36, 0.2); transform: translateY(-3px); }
+        .prize-sm-icon { font-size: 3rem; margin-bottom: 1rem; }
+        .prize-sm-name { font-weight: 700; margin-bottom: 0.3rem; }
+        .prize-sm-points { color: var(--gg-gold); font-weight: 700; font-family: 'Montserrat', sans-serif; }
+        .prize-sm-btn { margin-top: 1rem; padding: 0.6rem 1.2rem; font-size: 0.85rem; }
+        .auth-required { text-align: center; padding: 3rem; background: rgba(255,255,255,0.02); border-radius: 20px; margin-bottom: 2rem; }
+        .auth-required p { opacity: 0.6; margin-bottom: 1.5rem; }
+    </style>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
+</head>
+<body>
+
+    <nav id="navbar">
+        <div class="nav-container">
+            <a href="../index.html" class="logo"><div class="logo-icon">GG</div><span class="logo-text">GLOBAL GOAL</span></a>
+            <ul class="nav-links">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="earn-points.html">Earn Points</a></li>
+                <li><a href="leaderboard.html">Leaderboard</a></li>
+                <li><a href="prizes.html">Prizes</a></li>
+                <li><a href="highlights.html">Highlights</a></li>
+                <li><a href="referral.html">Refer & Earn</a></li>
+                <li id="auth-nav-item"><div class="user-points" onclick="location.href='profile.html'"><span class="points-icon">⚡</span><span id="nav-points">1,250</span> pts</div></li>
+            </ul>
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+        </div>
+    </nav>
+
+    <div class="page-header">
+        <span class="section-tag">Rewards</span>
+        <h1 class="section-title">Prize Catalog</h1>
+        <p class="section-desc">Save your points and redeem them for incredible prizes. New items added weekly!</p>
+    </div>
+
+    <!-- Auth Required Notice (shown when not logged in) -->
+    <section style="padding-top: 0; max-width: 1200px; margin: 0 auto;" id="auth-notice">
+        <div class="auth-required" style="display: none;">
+            <h3 style="margin-bottom: 1rem;">🔒 Sign In Required</h3>
+            <p>You need to be signed in to redeem prizes. Create an account or sign in to start earning and redeeming points.</p>
+            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                <a href="login.html" class="btn btn-primary">Sign In</a>
+                <a href="signup.html" class="btn btn-outline">Create Account</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Prize -->
+    <section style="padding-top: 0;">
+        <div class="prizes-full">
+            <div class="prize-detail">
+                <div class="prize-visual">🎮</div>
+                <div class="prize-details">
+                    <div class="prize-name-lg">PlayStation 5 Console</div>
+                    <div class="prize-points-lg">⚡ 5,000 Points</div>
+                    <div class="prize-desc-lg">The ultimate gaming console. Brand new PS5 disc edition with DualSense wireless controller. Experience lightning-fast loading, haptic feedback, and adaptive triggers. Perfect for gaming and streaming matches in 4K.</div>
+                    <div class="prize-meta">
+                        <div class="prize-meta-item">📦 Free Worldwide Shipping</div>
+                        <div class="prize-meta-item">✅ Brand New & Sealed</div>
+                        <div class="prize-meta-item">🔄 30-Day Warranty</div>
+                    </div>
+                    <button class="btn btn-gold redeem-btn" onclick="redeemPrize('ps5', 5000)" id="btn-ps5">Redeem Now</button>
+                    <div class="points-needed" id="need-ps5">You need 3,750 more points</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Ad -->
+    <div class="ad-container" style="max-width: 1200px;">
+        <span class="ad-label">Advertisement</span>
+        <div class="ad-placeholder leaderboard">
+            <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="XXXXXXXXXX" data-ad-format="horizontal" data-full-width-responsive="true"></ins>
+            <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        </div>
+    </div>
+
+    <!-- Prize Tiers -->
+    <section>
+        <div class="prizes-full">
+
+            <!-- Gold Tier -->
+            <div class="tier-section">
+                <div class="tier-header">
+                    <div class="tier-line"></div>
+                    <div class="tier-name gold">🏆 Gold Tier (1,000+ pts)</div>
+                    <div class="tier-line"></div>
+                </div>
+                <div class="prizes-row">
+                    <div class="prize-sm">
+                        <div class="prize-sm-icon">👟</div>
+                        <div class="prize-sm-name">Nike Mercurial Boots</div>
+                        <div class="prize-sm-points">⚡ 2,500 pts</div>
+                        <button class="btn btn-outline prize-sm-btn" onclick="redeemPrize('nike-boots', 2500)" id="btn-nike">Redeem</button>
+                    </div>
+                    <div class="prize-sm">
+                        <div class="prize-sm-icon">🎧</div>
+                        <div class="prize-sm-name">Sony WH-1000XM5</div>
+                        <div class="prize-sm-points">⚡ 1,200 pts</div>
+                        <button class="btn btn-outline prize-sm-btn" onclick="redeemPrize('headphones', 1200)" id="btn-headphones">Redeem</button>
+                    </div>
+                    <div class="prize-sm">
+                        <div class="prize-sm-icon">⚽</div>
+                        <div class="prize-sm-name">Official Match Ball</div>
+                        <div class="prize-sm-points">⚡ 1,500 pts</div>
+                        <button class="btn btn-outline prize-sm-btn" onclick="redeemPrize('match-ball', 1500)" id="btn-ball">Redeem</button>
+                    </div>
+                    <div class="prize-sm">
+                        <div class="prize-sm-icon">🎁</div>
+                        <div class="prize-sm-name">$100 Gift Card</div>
+                        <div class="prize-sm-points">⚡ 1,000 pts</div>
+                        <button class="btn btn-outline prize-sm-btn" onclick="redeemPrize('gift-100', 1000)" id="btn-gift100">Redeem</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Silver Tier -->
+            <div class="tier-section">
+                <div class="tier-header">
+                    <div class="tier-line"></div>
+                    <div class="tier-name silver">🥈 Silver Tier (500-999 pts)</div>
+                    <div class="tier-line"></div>
+                </div>
+                <div class="prizes-row">
+                    <div class="prize-sm">
+                        <div class="prize-sm-icon">👕</div>
+                        <div class="prize-sm-name">Adidas Football Kit</div>
+                        <div class="prize-sm-points">⚡ 800 pts</div>
+                        <button class="btn btn-outline prize-sm-btn" onclick="redeemPrize('kit', 800)" id="btn-kit">Redeem</button>
+                    </div>
+                    <div class="prize-sm">
+                        <div class="prize-sm-icon">🧢</div>
+                        <div class="prize-sm-name">Nike Cap & Scarf Set</div>
+                        <div class="prize-sm-points">⚡ 600 pts</div>
+                        <button class="btn btn-outline prize-sm-btn" onclick="redeemPrize('cap-scarf', 600)" id="btn-cap">Redeem</button>
+                    </div>
+                    <div class="prize-sm">
+                        <div class="prize-sm-icon">🎒</div>
+                        <div class="prize-sm-name">Adidas Gym Bag</div>
+                        <div class="prize-sm-points">⚡ 500 pts</div>
+                        <button class="btn btn-outline prize-sm-btn" onclick="redeemPrize('gym-bag', 500)" id="btn-bag">Redeem</button>
+                    </div>
+                    <div class="prize-sm">
+                        <div class="prize-sm-icon">💳</div>
+                        <div class="prize-sm-name">$50 Gift Card</div>
+                        <div class="prize-sm-points">⚡ 500 pts</div>
+                        <button class="btn btn-outline prize-sm-btn" onclick="redeemPrize('gift-50', 500)" id="btn-gift50">Redeem</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bronze Tier -->
+            <div class="tier-section">
+                <div class="tier-header">
+                    <div class="tier-line"></div>
+                    <div class="tier-name bronze">🥉 Bronze Tier (100-499 pts)</div>
+                    <div class="tier-line"></div>
+                </div>
+                <div class="prizes-row">
+                    <div class="prize-sm">
+                        <div class="prize-sm-icon">🧦</div>
+                        <div class="prize-sm-name">Nike Grip Socks</div>
+                        <div class="prize-sm-points">⚡ 300 pts</div>
+                        <button class="btn btn-outline prize-sm-btn" onclick="redeemPrize('socks', 300)" id="btn-socks">Redeem</button>
+                    </div>
+                    <div class="prize-sm">
+                        <div class="prize-sm-icon">🥤</div>
+                        <div class="prize-sm-name">Stainless Water Bottle</div>
+                        <div class="prize-sm-points">⚡ 250 pts</div>
+                        <button class="btn btn-outline prize-sm-btn" onclick="redeemPrize('bottle', 250)" id="btn-bottle">Redeem</button>
+                    </div>
+                    <div class="prize-sm">
+                        <div class="prize-sm-icon">📱</div>
+                        <div class="prize-sm-name">Phone Grip/Stand</div>
+                        <div class="prize-sm-points">⚡ 150 pts</div>
+                        <button class="btn btn-outline prize-sm-btn" onclick="redeemPrize('phone-grip', 150)" id="btn-phone">Redeem</button>
+                    </div>
+                    <div class="prize-sm">
+                        <div class="prize-sm-icon">💳</div>
+                        <div class="prize-sm-name">$10 Gift Card</div>
+                        <div class="prize-sm-points">⚡ 100 pts</div>
+                        <button class="btn btn-outline prize-sm-btn" onclick="redeemPrize('gift-10', 100)" id="btn-gift10">Redeem</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Platinum Tier -->
+            <div class="tier-section">
+                <div class="tier-header">
+                    <div class="tier-line"></div>
+                    <div class="tier-name platinum">💎 Platinum Tier (VIP Exclusive)</div>
+                    <div class="tier-line"></div>
+                </div>
+                <div class="prizes-row">
+                    <div class="prize-sm">
+                        <div class="prize-sm-icon">🎟️</div>
+                        <div class="prize-sm-name">Match Tickets (Pair)</div>
+                        <div class="prize-sm-points">⚡ 10,000 pts</div>
+                        <button class="btn btn-outline prize-sm-btn" onclick="redeemPrize('tickets', 10000)" id="btn-tickets">Redeem</button>
+                    </div>
+                    <div class="prize-sm">
+                        <div class="prize-sm-icon">🏨</div>
+                        <div class="prize-sm-name">Host City Hotel Stay</div>
+                        <div class="prize-sm-points">⚡ 8,000 pts</div>
+                        <button class="btn btn-outline prize-sm-btn" onclick="redeemPrize('hotel', 8000)" id="btn-hotel">Redeem</button>
+                    </div>
+                    <div class="prize-sm">
+                        <div class="prize-sm-icon">📸</div>
+                        <div class="prize-sm-name">Signed Memorabilia</div>
+                        <div class="prize-sm-points">⚡ 15,000 pts</div>
+                        <button class="btn btn-outline prize-sm-btn" onclick="redeemPrize('memorabilia', 15000)" id="btn-memorabilia">Redeem</button>
+                    </div>
+                    <div class="prize-sm">
+                        <div class="prize-sm-icon">✈️</div>
+                        <div class="prize-sm-name">Travel Voucher $500</div>
+                        <div class="prize-sm-points">⚡ 7,500 pts</div>
+                        <button class="btn btn-outline prize-sm-btn" onclick="redeemPrize('travel', 7500)" id="btn-travel">Redeem</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Ad -->
+    <div class="ad-container" style="max-width: 1200px;">
+        <span class="ad-label">Advertisement</span>
+        <div class="ad-placeholder medium-rect">
+            <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="XXXXXXXXXX" data-ad-format="rectangle"></ins>
+            <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        </div>
+    </div>
+
+    <!-- How Redemption Works -->
+    <section style="background: var(--gg-dark);">
+        <div class="section-header fade-in">
+            <span class="section-tag">Process</span>
+            <h2 class="section-title">How Redemption Works</h2>
+        </div>
+        <div class="points-grid fade-in" style="max-width: 1000px; margin: 0 auto;">
+            <div class="point-card">
+                <div class="point-icon">1️⃣</div>
+                <div class="point-value">Earn</div>
+                <div class="point-label">Complete Tasks</div>
+                <div class="point-desc">Watch videos, refer friends, check in daily. Stack up those points.</div>
+            </div>
+            <div class="point-card">
+                <div class="point-icon">2️⃣</div>
+                <div class="point-value">Save</div>
+                <div class="point-label">Build Your Balance</div>
+                <div class="point-desc">Points never expire. Save for big prizes or redeem small rewards anytime.</div>
+            </div>
+            <div class="point-card">
+                <div class="point-icon">3️⃣</div>
+                <div class="point-value">Redeem</div>
+                <div class="point-label">Claim Prize</div>
+                <div class="point-desc">Click redeem, verify your address, and receive your prize within 14 days.</div>
+            </div>
+            <div class="point-card">
+                <div class="point-icon">4️⃣</div>
+                <div class="point-value">Enjoy</div>
+                <div class="point-label">Share & Repeat</div>
+                <div class="point-desc">Post your win on social media for bonus points, then keep earning!</div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-brand"><span class="logo-text">GLOBAL GOAL 2026</span><p>Independent fan community. Not affiliated with FIFA.</p></div>
+            <div class="footer-links"><h4>Platform</h4><ul><li><a href="earn-points.html">Earn Points</a></li><li><a href="leaderboard.html">Leaderboard</a></li><li><a href="prizes.html">Prizes</a></li></ul></div>
+            <div class="footer-links"><h4>Legal</h4><ul><li><a href="terms.html">Terms</a></li><li><a href="privacy.html">Privacy</a></li><li><a href="contest-rules.html">Contest Rules</a></li></ul></div>
+        </div>
+        <div class="footer-bottom"><p>© 2026 Global Goal. All rights reserved. Not affiliated with FIFA.</p></div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+    <script>
+        function redeemPrize(prize, cost) {
+            if (!isLoggedIn) {
+                showNotification('Sign In Required', 'Please sign in to redeem prizes.', 'error');
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 2000);
+                return;
+            }
+
+            if (userPoints < cost) {
+                const needed = cost - userPoints;
+                showNotification('Not Enough Points', `You need ${needed} more points. Keep completing tasks!`, 'error');
+                return;
+            }
+
+            if (confirm(`Redeem ${prize} for ${cost} points? This cannot be undone.`)) {
+                userPoints -= cost;
+
+                if (userData) {
+                    userData.points = userPoints;
+                    if (!userData.redeemedPrizes) userData.redeemedPrizes = [];
+                    userData.redeemedPrizes.push({
+                        prize: prize,
+                        cost: cost,
+                        date: new Date().toISOString()
+                    });
+                }
+
+                localStorage.setItem('gg_points', userPoints);
+                saveLocalData();
+                updateNavPoints();
+                updatePrizeButtons();
+                showNotification('Redeemed!', `Your ${prize} is being processed. Check your email.`, 'success');
+            }
+        }
+
+        function updatePrizeButtons() {
+            const prizes = [
+                { id: 'ps5', cost: 5000 },
+                { id: 'nike', cost: 2500 },
+                { id: 'headphones', cost: 1200 },
+                { id: 'ball', cost: 1500 },
+                { id: 'gift100', cost: 1000 },
+                { id: 'kit', cost: 800 },
+                { id: 'cap', cost: 600 },
+                { id: 'bag', cost: 500 },
+                { id: 'gift50', cost: 500 },
+                { id: 'socks', cost: 300 },
+                { id: 'bottle', cost: 250 },
+                { id: 'phone', cost: 150 },
+                { id: 'gift10', cost: 100 },
+                { id: 'tickets', cost: 10000 },
+                { id: 'hotel', cost: 8000 },
+                { id: 'memorabilia', cost: 15000 },
+                { id: 'travel', cost: 7500 }
+            ];
+
+            // Update PS5 featured
+            const ps5Need = document.getElementById('need-ps5');
+            const ps5Btn = document.getElementById('btn-ps5');
+            if (ps5Need && ps5Btn) {
+                const needed = 5000 - userPoints;
+                if (needed <= 0) {
+                    ps5Need.textContent = '✅ You have enough points!';
+                    ps5Need.style.color = 'var(--gg-green)';
+                    ps5Btn.disabled = false;
+                } else {
+                    ps5Need.textContent = `You need ${needed.toLocaleString()} more points`;
+                    ps5Btn.disabled = true;
+                }
+            }
+
+            // Update all small prize buttons
+            prizes.forEach(p => {
+                const btn = document.getElementById(`btn-${p.id}`);
+                if (btn) {
+                    if (userPoints < p.cost) {
+                        btn.disabled = true;
+                        btn.textContent = `Need ${p.cost - userPoints} more`;
+                        btn.style.opacity = '0.5';
+                    } else {
+                        btn.disabled = false;
+                        btn.textContent = 'Redeem';
+                        btn.style.opacity = '1';
+                    }
+                }
+            });
+        }
+
+        // Show auth notice if not logged in
+        function checkAuth() {
+            const notice = document.querySelector('.auth-required');
+            if (!isLoggedIn && notice) {
+                notice.style.display = 'block';
+            }
+        }
+
+        // Update auth nav
+        function updateAuthNav() {
+            const authNav = document.getElementById('auth-nav-item');
+            if (isLoggedIn && currentUser) {
+                authNav.innerHTML = `<div class="user-points" onclick="location.href='profile.html'"><span class="points-icon">👤</span><span>${currentUser.displayName || 'Profile'}</span></div>`;
+            } else {
+                authNav.innerHTML = `<a href="login.html" class="auth-btn"><div class="user-points">Sign In</div></a>`;
+            }
+        }
+
+        // Initialize
+        setTimeout(() => {
+            updateAuthNav();
+            checkAuth();
+            updatePrizeButtons();
+        }, 600);
+    </script>
+</body>
+</html>

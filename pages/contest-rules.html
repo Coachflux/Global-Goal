@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contest Rules | Global Goal 2026</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .legal-page { max-width: 900px; margin: 0 auto; padding-top: 8rem; padding-bottom: 4rem; }
+        .legal-page h1 { font-size: 2.5rem; margin-bottom: 1rem; }
+        .legal-page h2 { font-size: 1.5rem; margin-top: 2.5rem; margin-bottom: 1rem; color: var(--gg-blue); }
+        .legal-page p { color: rgba(255, 255, 255, 0.7); line-height: 1.8; margin-bottom: 1rem; }
+        .legal-page ul { margin-left: 1.5rem; color: rgba(255,255,255,0.7); line-height: 1.8; }
+    </style>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+</head>
+<body>
+    <nav id="navbar">
+        <div class="nav-container">
+            <a href="../index.html" class="logo"><div class="logo-icon">GG</div><span class="logo-text">GLOBAL GOAL</span></a>
+            <ul class="nav-links">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="earn-points.html">Earn Points</a></li>
+                <li><a href="leaderboard.html">Leaderboard</a></li>
+                <li><a href="prizes.html">Prizes</a></li>
+                <li><a href="highlights.html">Highlights</a></li>
+                <li><a href="referral.html">Refer & Earn</a></li>
+                <li id="auth-nav-item"><div class="user-points" onclick="location.href='profile.html'"><span class="points-icon">⚡</span><span id="nav-points">1,250</span> pts</div></li>
+            </ul>
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+        </div>
+    </nav>
+    <div class="legal-page">
+        <h1>Contest Rules</h1>
+        <p>These rules govern the Global Goal 2026 points program and prize redemptions.</p>
+        <h2>1. Eligibility</h2>
+        <p>Open to individuals aged 13 and older worldwide. Void where prohibited by law.</p>
+        <h2>2. How to Earn Points</h2>
+        <p>Points are earned by completing verified tasks including watching videos, referring friends (max 100), daily check-ins, and social media engagement.</p>
+        <h2>3. Prize Redemption</h2>
+        <p>Prizes can be redeemed once sufficient points are accumulated. All redemptions are final. Prizes are subject to availability and shipping restrictions.</p>
+        <h2>4. Leaderboard</h2>
+        <p>The leaderboard displays the top 1000 users ranked by total points earned. Rankings are updated in real-time.</p>
+        <h2>5. Fair Play</h2>
+        <p>Any attempt to manipulate the system, use bots, or create fake accounts will result in disqualification and account termination.</p>
+    </div>
+    <footer>
+        <div class="footer-content">
+            <div class="footer-brand"><span class="logo-text">GLOBAL GOAL 2026</span><p>Independent fan community. Not affiliated with FIFA.</p></div>
+            <div class="footer-links"><h4>Platform</h4><ul><li><a href="earn-points.html">Earn Points</a></li><li><a href="leaderboard.html">Leaderboard</a></li><li><a href="prizes.html">Prizes</a></li></ul></div>
+            <div class="footer-links"><h4>Legal</h4><ul><li><a href="terms.html">Terms</a></li><li><a href="privacy.html">Privacy</a></li><li><a href="contest-rules.html">Contest Rules</a></li></ul></div>
+        </div>
+        <div class="footer-bottom"><p>© 2026 Global Goal. All rights reserved. Not affiliated with FIFA.</p></div>
+    </footer>
+    <script src="../js/main.js"></script>
+    <script>
+        function updateAuthNav() {
+            const authNav = document.getElementById('auth-nav-item');
+            if (isLoggedIn && currentUser) {
+                authNav.innerHTML = `<div class="user-points" onclick="location.href='profile.html'"><span class="points-icon">👤</span><span>${currentUser.displayName || 'Profile'}</span></div>`;
+            } else {
+                authNav.innerHTML = `<a href="login.html" class="auth-btn"><div class="user-points">Sign In</div></a>`;
+            }
+        }
+        setTimeout(updateAuthNav, 600);
+    </script>
+</body>
+</html>
